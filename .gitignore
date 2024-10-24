@@ -3,3 +3,5 @@
 *.log
 *.run.xml
 *.synctex.gz
+*.bbl
+*.blg
