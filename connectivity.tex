@@ -21,8 +21,6 @@
 
 \section{Connectivity}
 
-\subsection{Menger's theorem}
-
 \subsection{3-connected graphs}
 
 \begin{lemma}
@@ -30,5 +28,18 @@
 \end{lemma}
 \begin{proof}
     Suppose no edge $e$ exists. Then every edge $G/xy$ contains a separator of at most $2$ vertices. Since $G$ is $3$-connected, then the contracted vertex $y$ is in $S$, and $|S| = 2$. Call the separator $S = \{v_{xy}, z\}$. Then any two vertices separated by $S$ in $G/xy$ is also separated by $T := \{x,y, z\}$ in $G$. Since no proper subset of $T$ separates $G$, every vertex in $T$ has a neighbour in every component $C$ of $G - T$. Now choose the edge $xy$, vertex $z$ and component $C$ so that $|C|$ is small as possible. Pick a neighbour $v$ of $z$ in $C$. By assumption $G/{zv}$ is not 3-connected, so there is a vertex $w$ such that $\{z,v,w\}$ separates $G$. As $x, y$ are adjacent, $G - \{z,v,w\}$ has a component $D$ such that $D \cap \{x,y\}= \emptyset$. Then every neighbour of $v$ in $D$ lies in $C$ so $D \cap C \neq \emptyset$ and so $D$ is a proper subset of $C$. But this contradicts the minimality of $C$. 
+\end{proof}
+
+\subsection{Menger's theorem}
+
+\begin{theorem}
+    Let $G$ be a graph and $A, B \subseteq V(G)$. Then the minimum sized $A-B$ separator in $G$ is equal to the maximum number of disjoint $A-B$ paths in $G$. 
+\end{theorem}
+Let $k(G, A, B)$ be the size of the minimum separator of $A$ and $B$. Clearly, the number of disjoint paths is at most $k = k(G, A, B)$. We wish to show that $k$ paths exist.
+
+\begin{proof}
+    Apply induction on $|E(G)|$. If $G$ has no edges, then $|A \cap B| = k$, so there are $k$ disjoint $A-B$ paths. Now assume $G$ has an edge $e = xy$. Assume for the contrary that $G$ has no $k$ disjoint $A-B$ paths. Then neither does $G/e$. $G/e$ has an $A-B$ separator $Y$ with fewer than $k$ vertices. The contracted vertex $v_e$ is in $Y$ otherwise $Y \subseteq V$ is an $AB$-separator in $G$. Then $X = Y \setminus \{v_e\} \cup \{x, y\}$ is an $A-B$ separator in $G$ with exactly $k$ vertices. 
+
+    Now consider $G - e$. Since $x, y \in X$, every $A - X$ separator in $G - e$ is also an $A-B$ separator in $G$ and hence contains at least $k$ vertices. There are $k$ disjoint $A - X$ paths in $G - e$, similarly there are $k$ disjoint paths in $G - e$. As $X$ separates $A$ from $B$, these two path systems do not meet outside $X$ and can be joined to form $k$ disjoint $A-B$ paths. 
 \end{proof}
 \end{document}
