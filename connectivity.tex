@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{csquotes}
+\usepackage[english]{babel}
+\usepackage{biblatex}
+
+\usepackage{todonotes}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{remark}[theorem]{Remark}
+
+\addbibresource{planar-graphs.bib}
+\author{Eric Luu}
+
+\begin{document}
+
+\section{Connectivity}
+
+\subsection{Menger's theorem}
+
+\subsection{3-connected graphs}
+
+\begin{lemma}
+    Every $3$-connected graph $G$ where $G \neq K_4$ has an edge $e$ such that $G/e$ is $3$-connected.
+\end{lemma}
+\begin{proof}
+    Suppose no edge $e$ exists. Then every edge $G/xy$ contains a separator of at most $2$ vertices. Since $G$ is $3$-connected, then the contracted vertex $y$ is in $S$, and $|S| = 2$. Call the separator $S = \{v_{xy}, z\}$. Then any two vertices separated by $S$ in $G/xy$ is also separated by $T := \{x,y, z\}$ in $G$. Since no proper subset of $T$ separates $G$, every vertex in $T$ has a neighbour in every component $C$ of $G - T$. Now choose the edge $xy$, vertex $z$ and component $C$ so that $|C|$ is small as possible. Pick a neighbour $v$ of $z$ in $C$. By assumption $G/{zv}$ is not 3-connected, so there is a vertex $w$ such that $\{z,v,w\}$ separates $G$. As $x, y$ are adjacent, $G - \{z,v,w\}$ has a component $D$ such that $D \cap \{x,y\}= \emptyset$. Then every neighbour of $v$ in $D$ lies in $C$ so $D \cap C \neq \emptyset$ and so $D$ is a proper subset of $C$. But this contradicts the minimality of $C$. 
+\end{proof}
+\end{document}

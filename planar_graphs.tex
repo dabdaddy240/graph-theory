@@ -1,7 +1,18 @@
 \documentclass{article}
 \usepackage{amsmath, amsthm, amssymb}
+\usepackage{csquotes}
 \usepackage[english]{babel}
 \usepackage{biblatex}
+
+\usepackage{todonotes}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{remark}[theorem]{Remark}
 
 \addbibresource{planar-graphs.bib}
 \author{Eric Luu}
@@ -11,7 +22,66 @@
 \section{Planar graphs}
 
 \subsection{Kuratowski-Wagner theorem}
-The Kuratowski-Wagner theorem \cite{kuratowskiProblemeCourbesGauches1930} states the following:
+Wagner \cite{wagnerUeberEigenschaftEbenen1937} prove the following:
 
-\printbibliography
+\begin{theorem}[\cite{wagnerUeberEigenschaftEbenen1937}]
+    A graph $G$ is planar if and only if $G$ is $K_5$-minor-free and $K_{3,3}$-minor-free. 
+\end{theorem}
+The forwards direction is easy. $K_5$ is nonplanar and $K_{3,3}$ is nonplanar (from Euler's theorem). 
+
+Kuratowski \cite{kuratowskiProblemeCourbesGauches1930} proved a refinement. A graph $H$ is a \textit{topological minor} of a graph $G$ if a graph subdivision of $H$ is isomorphic to a subgraph of $G$. Topological minors are a type of graph minor.
+
+\begin{theorem}[\cite{kuratowskiProblemeCourbesGauches1930}]
+    A graph $G$ is planar if and only if $G$ does not have $K_5$ as a topological minor or $K_{3,3}$ as a topological minor. 
+\end{theorem}
+
+It is easy to show that topological minors are minors. 
+
+\begin{lemma}
+    Let $G, H$ be graphs. If $H$ is a minor of $G$ and $\Delta(H) \leq 3$, then $H$ is a topological minor of $G$.
+\end{lemma}
+
+\begin{proof}
+    Let $K$ be a minimal model of $H$ in $G$. Then the branch sets of $K$ are subdivisions of $K_{1,3}$ and touch each model exactly once. Then $H$ is a model in $G$. 
+\end{proof}
+
+\begin{lemma}
+    A graph $G$ contains $K_5$ or $K_{3,3}$ as a minor if and only if $G$ contains $K_5$ or $K_{3,3}$ as a topological minor. 
+\end{lemma}
+
+\begin{proof}
+    Topological minor implies minor, so that is the backwards direction. 
+    $K_{3,3}$ has degree $\leq 3$ and therefore if $K_{3,3}$ is a minor of $G$ $K_{3,3}$ is a topological minor of $G$.
+
+    Suppose $K_5 \leq G$. Then either $K_5$ is a topological minor of $G$ or $K_{3,3}$ is a minor of $G$. Let $K$ be a minimal model of $K_5$ in $G$. Every branch set of $K$ is a tree in $G$. Between any two branch sets $K$ has exactly one edge. Take the tree induced by $V_x$, $x \in K$. If every branch set of $K$ is a subdivision of the star $K_{1,3}$, then this is a subdivision of $K_5$ in $G$. Otherwise, there is a branch set which contains two vertices of degree 3. The branch sets that the vertices are adjacent to are split evenly between these two vertices as the branch set is a tree. Then contracting that branch set to two vertices and every other branch set to a single vertex yields a $K_{3,3}$ topological minor.
+\end{proof}
+
+\begin{lemma}
+    Every $3$-connected graph $G$ without $K_5$ or $K_{3,3}$ as a minor is planar. 
+\end{lemma}
+
+\begin{proof}
+    Proof by induction. If $|V(G)| = 4$, then $G = K_4$, and any subgraph of $K_4$ is planar. Now suppose $|V(G)| > 4$. Since $G$ is $3$-connected, $G$ has an edge $xy$ such that $G/xy$ is $3$-connected.\todo{prove} Then $G/xy$ has no $K_5$ or $K_{3,3}$ minor, so $G/{xy}$ can be drawn on the plane. Call the plane graph $\tilde{G}$. Let $f$ be the face of $\tilde{G} - v_{xy}$ containing $v_{xy}$ and let $C$ be the boundary of $f$. Let $X := N_G(x)\setminus \{y\}$, let $Y := N_G(y) \setminus \{x\}$. Then $X \cup Y$ is in $C$. Now we draw $G - y$ by replacing $v_{xy}$ with $x$. Our aim is to add back on $y$. Since $\tilde{G}$ is $3$-connected, $\tilde{G} - v_{xy}$ is 2-connected, so $C$ is a cycle. Let $x_1, \ldots, x_k$ be the enumeration around $C$ of the vertices in $X$ and let $P_i := x_i , \ldots , x_{i+1}$ be the subpaths on $C$ between. Then $Y \subseteq V(P_i)$. 
+
+    Suppose not. If $y$ has a neighbour $y'$ in the interior of $P_i$ for some $i$ and another neighbour $y''$ in $C - P_i$, separated by $x' = x_i$ and $x_{i + 1}$. If $Y \subseteq X$ and $|Y \cap X| \leq 2$, then $y$ has exactly two neighbours $y'$, $y''$ on $C$ not in the same $P_i$, so $y'$ and $y''$ are separated by two vertices $x', x''$ in $X$. Then $x, y', y''$ and $y, x', x''$ are the two ends of a subdivision of $K_{3,3}$. Then the other case is that $y, x$ have three common neighbours on $C$. Then this forms a subvivision of $K_5$. 
+
+    Then we can draw $y$ on the arc between $x$ and $P_i$ where $Y \subseteq P_i$. 
+\end{proof}
+
+\begin{lemma}
+    Every graph $G$ has a tree-decomposition $(T, (B_x)_x)$ of adhesion 2 where every torso is either $K_{\leq 3}$ or a 3-connected graph. Moreover, if $K$ is not a minor of $G$ then $K$ is not a minor of any torso. 
+\end{lemma}
+
+\begin{proof}
+    \todo{simple proof, use induction}
+\end{proof}
+
+Suppose $G$ has a tree-decomposition of this kind above. Then glue together the graph to form the embedding of $G$ on a surface. 
+
+\subsection{Exercises}
+Every graph can be embedded in $\mathbb{R}^3$ with all edges straight. By analysis, we can place all vertices so that no four vertices lie on a flat plane.
+
+Planar graphs are a minor-closed class. Let $G$ be a planar graph. Subgraphs of $G$ are obviously planar graphs. Now let $uv$ be an edge. Then taking a deformation retraction of $uv$ to a point preserves the topology. Therefore, edge contractions of $G$ are also planar. Then every planar graph is a minor of a grid. Let $G$ be a planar graph. Then let $G_n$ be the $n \times n$ grid, where $n = |V(G)|^2$. Then we can delete vertices and contract edges of $G_n$ to form $G$. 
+
+\printbibliography[]
 \end{document}
