@@ -1,0 +1,354 @@
+\documentclass[]{report}
+\usepackage[margin = 1in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[english]{babel}
+\usepackage{url}
+\usepackage{todonotes}
+\usepackage{csquotes}
+
+\usepackage{hyperref}
+\usepackage[noabbrev, capitalise]{cleveref}
+
+\usepackage[style = numeric,
+isbn=false,
+url=false,
+eprint = false,
+maxbibnames=99
+]{biblatex}
+\renewbibmacro{in:}{}
+\DeclareSourcemap{
+	\maps[datatype=bibtex]{
+		\map{
+			\step[fieldset=url, null]
+			\step[fieldset=extra, null]
+			\step[fieldset=urldate, null]
+		}
+	}
+}
+\AtEveryBibitem{%
+	\clearfield{day}%
+	\clearfield{month}%
+	\clearfield{endday}%
+	\clearfield{endmonth}%
+}
+
+\addbibresource{Book-Embeddings.bib}
+% Commands
+\newcommand{\tree}{\mathcal{T}}
+\newcommand{\tw}{\text{tw}}
+\newcommand{\had}{\text{had}}
+\newcommand{\pw}{\text{pw}}
+\newcommand{\td}{\text{td}}
+\newcommand{\pn}{\text{pn}}
+% Environments
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{example}[theorem]{Example}
+
+\numberwithin{theorem}{section}
+\numberwithin{equation}{section}
+
+%opening
+\title{Towards a proof that all $K_t$-minor-free graphs have bounded pagenumber}
+\author{Eric Luu}
+
+\begin{document}
+
+\maketitle
+\chapter{Abstract}\label{abstract}
+In this report we outline our current progress in proving that $K_t$-minor free graphs have bounded pagenumber. Proving this bound will connect two important concepts in structural graph theory that have been studied extensively for the past 40 years. We will outline the most important theorem in structural graph theory related to $K_t$-minor free graphs, the Graph Minor Structure Theorem. We will also introduce some other proofs which will be of use proving this bounded pagenumber conjecture. 
+\chapter{Introduction}\label{sec:introduction}
+Structural graph theory is a fundamental topic in graph theory and its study has led to a deeper understanding of graphs. Many results from structural graph theory decompose graphs into ones with bounded parameters. One of the most important theorems in structural graph theory is Robertson and Seymour's Graph Minor Theorem \cite{robertsonGraphMinorsXX2004} which states that proper minor-closed families of graphs are characterised by a finite set of forbidden minors. 
+\par
+The concept of the \textit{pagenumber} of a graph was introduced by Ollmann \cite{ollmannBookThicknessVarious1973} in the context of VLSI design and integrated circuitry. A \textit{book-embedding} of a graph is a way to arrange the vertices on the ``spine'' of a book and arrange the edges on ``pages'' of a book, or half-planes. The \textit{pagenumber} of a graph $G$ is the smallest number of pages necessary in a book-embedding of $G$. 
+
+The driving question of this report is the following: 
+\begin{conjecture}\label{conj:bded_had_pn}
+	Given a graph $G$ with no $K_t$ minor, is the pagenumber of $G$ bounded by a function on $t$, so $\pn(G) \leq f(t)$ for some $t$?
+\end{conjecture}
+Answering this question will yield a link between the pagenumber of a graph and the global structure of the graph. This report currently lays out the literature related to this question. We use a result in one of the papers of the Graph Minor Theorem, which is the Graph Minor Structure Theorem \cite{robertsonGraphMinorsXVI2003}.
+
+In a PhD thesis, Blankenship claimed to have a proof of \cref{conj:bded_had_pn}.\cite{Blankenship-PhD03} However, this result has not been published in any journal and has not been independently verified. We aim to fill this gap in our knowledge.
+
+\section{Definitions}\label{chap:Definitions}
+We lay out this chapter to build towards important notions in structural graph theory.
+
+\section{Basic definitions}\label{sec: Basic definitions}
+For a graph $G$, we define the \textit{vertex} and \textit{edge} sets of $G$ to be $V(G)$ and $E(G)$ respectively.
+For a subset of vertices $A \subseteq V(G)$, we denote the \textit{induced subgraph} on $G$ with vertex set $A$ as $G[A]$. 
+
+\begin{itemize}
+	\item A \textit{path} in a graph $G$ is a sequence of edges $e_1, e_2, \cdots, e_{\ell- 1}$ which join a sequence of vertices $v_1, v_2, \cdots, v_{\ell}$ such that $e_i = v_iv_{i + 1}$, and all the vertices are distinct. 
+	\item A \textit{simple cycle} $C$ in a graph $G$ is a sequence of edges $e_1, e_2, \cdots, e_{\ell}$ which join a sequence of vertices $v_1, v_2, \cdots, v_{\ell}$ such that $e_i = v_iv_{i + 1}$ for $1 \leq i \leq \ell - 1$ and $e_\ell = v_\ell v_1$. 
+	\item A \textit{Hamiltonian cycle} in a graph $G$ is a simple cycle $C$ such that all vertices in $G$ appear in $C$.
+\end{itemize}
+
+We say that a graph $G$ is \textit{$k$-connected} if between any two vertices $v, w$ in $G$, there are $k$ vertex-disjoint paths between $v$ and $w$. For the case that $k = 2$, the graph is \textit{biconnected}. A graph $G$ with a Hamiltonian cycle is biconnected. 
+
+We say a graph $G$ is $k$-colourable if there exists a function $f: V(G) \rightarrow [k]$ such that for all $vw \in E(G)$, $f(v)$ and $f(w)$ are assigned different colours. The \textit{chromatic number} $\chi(G)$ is the smallest $k$ such that $G$ is $k$-colourable. 
+
+Throughout this report, we use as shorthand for the set $[n] = \lbrace 1\cdots n \rbrace$. 
+
+\section{Planar graphs}\label{sec:Planar graphs}
+We say a graph $G$ is \textit{planar} if $G$ can be drawn on the Euclidean plane $\Sigma$ such that no two edges cross. Say $G$ is drawn on a plane. If $G$ is embedded on $\Sigma$, then $\Sigma$ is divided into regions where no edges cross. These regions are called \textit{faces}. The \textit{outerface} is the face on the outside of the graph. We say that a set of vertices \textit{lie} on a face if they are on the boundary of the face. We also say that the vertices and edges \textit{bound} a face. $G$ is \textit{outerplanar} if $G$ is planar and all vertices in $G$ lie on the outerface. 
+Let $F(G)$ be the set of faces of $G$ embedded on $\Sigma$. Then we have that:
+\begin{theorem}[Euler's formula]\label{thm:Euler_planar}
+	\begin{equation}
+		|V(G)| - |E(G)| + |F(G)| = 2
+	\end{equation}
+\end{theorem}
+
+We can use this result to bound the number of edges in an outerplanar graph.
+\begin{theorem}\label{thm:outerplanar_bound}
+	If $G$ is outerplanar with $n$ vertices and $m$ edges, then $m \leq 2n - 3$.
+\end{theorem}
+
+\begin{proof}[Proof of theorem]
+	Suppose $G$ is \textit{maximal outerplanar}, meaning adding any edge will break the outerplanar property. Let the \textit{internal faces} be all the faces which are not the outerface, and let there be $f$ internal faces. Then the outerface has $n$ edges on the boundary, but each internal face will have exactly $3$ edges on the boundary. However, each edge is touching two distinct faces. Therefore we have that
+	\begin{equation}
+		3 f - 3 + n = 2m
+	\end{equation}
+	Combining with \cref{thm:Euler_planar} given by
+	\begin{equation}
+		n - m + f = 2
+	\end{equation}
+	
+	we have, after some rearrangment, 
+	\begin{equation}
+		2n = 3 + m
+	\end{equation}
+	Therefore, $m = 2n - 3$. As every outerplanar graph is a subgraph of a maximal planar graph, then we have that $m \leq 2n - 3$. 
+\end{proof}
+\section{Graph minors}\label{sec:Graph Minors}
+We say that a graph $H$ is a \textit{minor} of another graph $G$ if a graph isomorphic to $H$ can be obtained from $G$ by deleting vertices, edges, and \textit{contracting} edges. To \textit{contract} an edge $uv$, we delete both $u$ and $v$ and create a new vertex $w$ such that $N_G(w) = N_G(u) \cup N_G(v)$, where $N_G(v)$ is the neighbourhood of $v$. We notate an edge contraction on $uv$ as $G\setminus uv$.
+We notate the statement `` $H$ is a minor of $G$'' as $H \leq G$. 
+We define minors up to isomorphism, and we typically omit the isomorphism relation in our definitions. We say that a graph $G$ is \textit{$H$-minor-free} if there is no sequence of deletions and contractions of $G$ that yield a graph isomorphic to $H$. We say that a family of graphs $\mathcal{F}$ is minor-closed if for all $G \in \mathcal{F}$, all minors of $G$ is also in $\mathcal{F}$. 
+
+\begin{example}
+	An example of a minor-closed class is the class of planar graphs. 
+\end{example}
+
+An important class of graph families are the $K_t$-minor free graphs. For a graph $G$, we define \textit{Hadwiger's number} $\had(G)$ to be the largest $t$ such that $K_t$ is a minor of $G$. This is named after Hugo Hadwiger and his most famous conjecture.
+
+\begin{conjecture}[Hadwiger's conjecture]\cite{hadwigerUeberKlassifikationStreckenkomplexe1943}
+	For all graphs $G$, $\chi(G) \leq \had(G)$, where $\chi(G)$ is the \textit{chromatic number} of $G$. 
+\end{conjecture}
+\section{Book embedding}\label{sec:Book Embedding}
+A \textit{book} of \textit{thickness} $k$ are $k$ half-planes glued together on a common boundary. We refer to the boundary as the \textit{spine} and we refer to the individual half-planes as \textit{pages}. In topology, these are referred to as \textit{fans} of half-planes. Books were described by Persinger and Atnosen in the 1960s \cite{persingerSubsetsNbooksE31966} \cite{atneosenOnedimensionalNleavedContinua1972}. 
+A \textit{book-embedding} of a graph $G$ is an embedding of $G$ on a book. We place the vertices of $G$ on the mutual boundary of all half-planes, and we place the edges on each half-plane such that no two edges cross.
+
+The \textit{pagenumber} of a graph $G$ is the minimum number of pages required to embed $G$ on a book. This is also referred to as \textit{book-thickness}, or \textit{stack-number}. 
+
+We have another definition which abstracts the underlying topology and focuses on the graph. This definition is more combinatorial in nature. 
+A \textit{book embedding} of a graph $G$ is an arrangement of the vertices of $G$ in a total ordering $v_1 < v_2 < \cdots < v_n$. We then colour the edges $E(G)$ such that if we have $v_a < v_b < v_c < v_d$ and edges $v_a v_c$ and $v_b v_d$, then they are each assigned different colours.
+We refer to the total ordering of $V(G)$ in the book embedding as $(<)$ or as $(\leq)$. For a book-embedding $(v_1, v_2, \cdots, v_{|G|})$, we refer to the edges $\left\{v_1 v_2, v_2 v_3, \cdots, v_{|G| - 1}, v_{|G|}v_{1}\right\}$ as \textit{spine edges}.
+A \textit{circular ordering} of the vertices can be used over a linear ordering. A circular ordering ignores the start and end vertices. 
+
+Book-embeddings were introduced by Kainen and Ollmann in the 1970s. \cite{kainenRecentResultsTopological1974} \cite{ollmannBookThicknessVarious1973}. It was developed further in a paper by Bernhart and Kainen \cite{bernhartBookThicknessGraph1979}. 
+
+\subsection{Historical interest}\label{ssec:Pagenumber_History}
+Pagenumbers were developed for VLSI and processor design.
+The project of finding upper and lower bounds of the pagenumber of planar graphs was started by Bernhart and Kainen when they conjectured that planar graphs had unbounded page-number. However, Buss and Shor\cite{bussPagenumberPlanarGraphs1984} found that the pagenumber of planar graphs was at most 9, and Heath \cite{heathEmbeddingPlanarGraphs1984} found that the pagenumber of planar graphs is at most 7. Yannakakis' devised an algorithm to bound the pagenumber to at most 4 \cite{yannakakisEmbeddingPlanarGraphs1989}. Yannakakis, in this paper, claimed that there exist planar graphs with pagenumber 4. However, his proof was incomplete and the full proof was left unpublished. In 2020, Yannanakis published his full proof. \cite{yannakakisPlanarGraphsThat2020} At around the same time, Kaufmann, Bekos, Klute, Pupyrev, Raftopoulu and Ueckerdt published a similar result\cite{kaufmannFourPagesAre2020}. 
+
+\section{Treewidth}\label{sec:treewidth}
+
+The \textit{treewidth} of a graph $G$ measures how far $G$ is from being a forest \cite{diestelGraphMinors2017}. 
+
+\begin{definition}[Tree-decomposition]\label{def:tree-decomposition}
+	The tree-decomposition $\tree$ of a graph $G$ is defined as a tree $T$ with associated \textit{bags} $\lbrace B_x : x \in V(T) \rbrace$ such that:
+	\begin{itemize}
+		\item Every vertex in $G$ is in at least one bag $B_x$. 
+		\item for all $v \in V(G)$, the subset of vertices $\left\lbrace x \in V(T): v \in B_x \right\rbrace$ in $V(T)$ induces a connected subtree in $V(T)$.
+		\item For all edges $vw \in E(G)$, there exists a bag $B_x$ such that both $v$ and $w$ are in the bag $B_x$.
+	\end{itemize}
+\end{definition}
+We refer to the vertices of the tree $T$ as \textit{nodes}. 
+The \textit{width} of the tree decomposition $\tree$ is defined as $\max \lbrace |B_x| - 1 : x \in V(T) \rbrace$. An important tree-decomposition 
+
+\begin{definition}\label{def:treewidth}
+	The treewidth of a graph $G$, denoted as $\tw(G)$, is defined to be the smallest width for all tree decompositions of the graph $G$.
+\end{definition}
+
+\subsection{Historical discussion}\label{ssec:tw_historical}
+Treewidth was introduced in \cite{berteleChapterEliminationVariables1972} with applications to dynamic programming under the name ``dimension''. It was then rediscovered by Halin \cite{halinSfunctionsGraphs1976} before being used by Robertson and Seymour in \cite{robertsonGraphMinorsIII1984}, which was introduced to prove the Graph Minor Theorem\cite{robertsonGraphMinorsXX2004}.
+
+\section{Known results from structural graph theory}\label{chap:Known results}
+In this chapter of the report, we outline important known results that will help us solve \cref{conj:bded_had_pn}.
+
+\section{Graph Minor Structure Theorem}\label{sec:Kt_Minor_Free}
+What is the structure of $K_t$-minor free graphs? We shall show that we can roughly characterise all $K_t$-minor free graphs as graphs that are products of a series of operations. This classification is the main result of \cite{robertsonGraphMinorsXVI2003}.
+\subsection{Clique-minor-free minor-closed families}\label{ssec:Kt_Minor_Closed_families}
+We define $\had(G)$ to be the largest $t$ such that $G$ has a $K_t$ minor. 
+\subsubsection{Planar graphs}\label{sssec:K_5-free_Planar}
+\begin{theorem}\label{thm:K5_Free_Planar}
+	If $G$ is a planar graph, then $G$ is $K_5$-minor-free.
+\end{theorem}
+\begin{proof}
+	If $G$ is planar with $n$ vertices and $m$ edges, then $m \leq 3n -6$, from \cref{thm:planar_graph_edge_bound}. However, $K_5$ has $5$ vertices and $10$ edges. But $ 10 > 3 \times 5 - 6$, so $K_5$ is not planar. As the family of planar graphs is minor-closed, then if $G$ is planar, then $K_5$ is minor-free.
+\end{proof}
+
+\subsubsection{A short discussion of topology}\label{sssec:topology}
+This section has definitions from \textcite{moharGraphsSurfaces2001} Graphs on Surfaces. A surface $\Sigma$ is a topological space which, at every point, has a neighbourhood homeomorphic to a disk. There are three important surfaces to know- the sphere $S^2$, the torus $T$, and the real projective plane $P$.
+\par
+We \textit{add} a \textit{handle} to a surface $\Sigma$ by removing two disks in $\Sigma$ and identifying the boundaries such that one goes clockwise and the other goes counterclockwise. We add a \textit{crosscap} by removing a disk in $\Sigma$ and identifying opposite points on the boundary. We add a \textit{twisted handle} to a surface $\Sigma$ by removing two disks in $\Sigma$ and identifying the boundaries such that both go clockwise.
+\par
+\begin{definition}[Euler Genus]
+	The \textit{Euler genus} of a surface $\Sigma$ obtained from a sphere by adding $h$ handles, $c$ crosscaps and $t$ twisted handles is $2h + 2t + c$.
+\end{definition}
+Note that ``genus'' and ``Euler genus'' are two distinct concepts in topology. In this paper, when we discuss genus, we will always discuss \underline{Euler genus}.
+
+We say a surface $\Sigma$ is \textit{orientable} if $\Sigma$ can be obtained from $S^2$ by only adding handles. An example of an orientable surface is the torus.
+
+We say a surface $\Sigma$ is \textit{non-orientable} if $\Sigma$ can be obtained from $S^2$ by adding at least one crosscap or twisted handle. An example of a non-orientable surface is the projective plane or the Klein bottle. 
+
+\subsubsection{Genus-g graphs}\label{sssec:Graph_genus}
+
+We define the \textit{Euler Genus} of a \textit{graph} $G$ to be the smallest Euler genus $g$ surface $\Sigma$ such that $G$ can be embedded on $\Sigma$ without crossings (note that $\Sigma$ can be orientable or nonorientable).
+
+Let $|F(G)|$ be the number of faces in a graph $G$. Then we have that $|V(G)| - |E(G)| + |F(G)| = \chi = 2 - g$. 
+
+\begin{theorem}[Bounded genus]\label{thm:bounded_genus_kt_free}
+	If $G$ is a genus $g$ graph, then $G$ is $K_t$-minor free, where $t > \sqrt{6g} + 4$. 
+\end{theorem}
+This proof mimics the above proof for planarity, but with higher dimensions. 
+We can show that if $G$ has genus $g$, then if $G$ has $n$ vertices and $m$ edges, then $n - m + f = \chi = 2-g$, then as each face has at most 3 vertices and each edge is incident to two faces, we have that $f \leq 2m/3$. Therefore, $m \leq 3(n + g - 2)$. So if $K_t$ is embeddable on a genus $g$ graph, then $\binom{t}{2} \leq 3 (t + g - 2)$. Thus $t \leq \sqrt{6g} + 4$. So if $G$ has genus $g$, then $G$ is $K_t$-minor-free, where $t > \sqrt{6g} + 4$. 
+
+\subsubsection{Apex vertices}\label{sssec:Apex_Vertices}
+An apex vertex $a$ is added to a graph $G$ such that it has arbitrary edges. As such, $a$ can \textit{dominate} all other vertices in $G$, meaning that $a$ can be adjacent to all vertices in $G$. 
+\begin{theorem}
+	If $G$ is $K_t$-minor free, $G$ with the apex vertex $a$ is $K_{t+1}$- minor free. 
+\end{theorem}
+\begin{proof}
+	We shall prove the contrapositive. Suppose $G + a$ has a $K_{t + 1}$ minor. Then $K_{t + 1}$ has a model in $G + a$ and denote the model function as $\rho$. Now let $v$ be the vertex in $K_{t + 1}$ such that $\rho(v)$ contains $a$. Then if we delete $v$ from $K_{t + 1}$ and delete all the vertices in $\rho(v)$ from $G$, then we have that $K_t$ is a minor of $G'$, where $G'$ is $G - \rho(v)$. But $G'$ is a minor of $G$, as $G'$ does not contain $a$. But this means that $G$ has a $K_t$ minor. 
+\end{proof}
+\subsubsection{Clique-sums}\label{sssec:Clique_Sums}
+The \textit{$k$-clique-sum} of two graphs $G$ and $H$, denoted as $G \# H$, is the graph obtained by performing a series of operation on the cliques of $G$ and $H$. We find cliques in $G$ and $H$, $C_G$ and $C_H$ respectively, such that $C_G$ and $C_H$ have size $k$. Then we identify the vertices in $C_G$ and $C_H$ to glue $G$ and $H$ together. Call this new clique $C$. We can delete some edges between vertices in $C$.
+
+
+\begin{lemma}
+	If $G = G_1 \# G_2$,then $\had(G) = \max(\had(G_1), \had(G_2))$ and $\tw(G) = \max(\tw(G_1), \tw(G_2))$.
+\end{lemma}
+
+\begin{example}\label{ex:clique_sum_genus}
+	If $G$ is the clique-sum of Euler genus $g$ graphs, then $G$ is $K_{\sqrt{6g} + 5}$-minor-free, but $G$ possibly has unbounded genus.
+\end{example}
+
+\begin{theorem}[Wagner's theorem\cite{wagnerUeberEigenschaftEbenen1937}]\label{thm:WagnersTheorem}
+	If $G$ is $K_5$-minor-free, then $G$ can be obtained from $(\leq 3)$-clique-sums of planar graphs and the Wagner graph $V_8$.
+\end{theorem}
+
+
+
+\subsubsection{Torsos and adhesion}\label{sssec:Torsos and Adhesion}
+Given a graph $G$ and a tree-decomposition $\tree$, the \textit{torso} of a bag $B_x$ of $T$ is the graph $G\langle B_x \rangle$, obtained from $G[B_x]$ where $vw$ is a vertex in $G\langle B_x \rangle$ if and only if $v,w \in B_x \cap B_y$, where $y$ is any neighbour of $x$ in $T$. So the set $B_x \cap B_y$ for all neighbours $y$ of $x$ in $T$ is a clique in $G\langle B_x \rangle$.
+We refer to the \textit{adhesion set} as the set $B_x \cap B_y$. 
+The \textit{adhesion} of a tree is defined as $\max(|B_x \cap B_y|)$ where $xy$ is an edge in $T$.
+
+\subsubsection{Relationship between clique-sums and treewidth}
+Given $G$ and a tree-decomposition $\tree$, we can say that $G$ is a clique-sum of the torsos $G\langle B_x \rangle$ where the size of the cliques that we paste over is at most the adhesion.
+
+\subsubsection{Vortices}\label{sssec:vortices}
+Let $G$ be embedded on a surface $\Sigma$, and let $F$ be a face on $G$. Let $D$ be a disc in $\Sigma$ such that $D$ only intersects $G$ only on vertices on the boundary of $F$. We denote these discs as $G$-clean. 
+
+Then let $\Lambda = (x_1, x_2, \cdots, x_b)$ be a tuple of vertices on the boundary of $F$ such that they intersect $D$. Then we define a new graph $H$ such that $V(G) \cap V(H) = \Lambda$, and there is a \textit{path-decomposition} of $H$ of bags $B_1, B_2, \cdots B_b$ such that $x_i \in B_i$ for all $i$. $H$ is denoted as a \textit{$D$-vortex} of $G$. The width of a $D$-vortex is the width of the path above, or $\max_i(|B_i| - 1)$. 
+\subsection{Robertson-Seymour Graph Minor Structure Theorem\cite{robertsonGraphMinorsXVI2003}}\label{ssec:Robertson_Seymour_Graph_Structure}
+Given $g, p, a \geq 0$, $k \geq 1$, a graph $G$ is $(g, p, k, a)$- almost embeddable if there exists an $A \subseteq V(G)$ with $|A| \leq a$, and there exists subgraphs $G_0, G_1, \cdots,  G_{p'}$ of $G$ such that:
+\begin{itemize}
+	\item $G - A = G_0 \cup G_1 \cup G_2 \cdots G_{p'}$
+	\item $p' \leq p$
+	\item There is an embedding of $G_0$ onto a surface $\Sigma$ of genus $\leq g$
+	\item There exists pairwise disjoint $G_0$-clean discs $D_1, D_2, \cdots, D_{p'}$ in $\Sigma$
+	\item $G_i$ is a $D_i$-vortex of width at most $k$.
+\end{itemize}
+
+\begin{theorem}[Robertson-Seymour Graph Minor Structure Theorem for $K_t$-minor-free graphs]
+	For all $t$, there exists $g, p, a \geq 0$, $k, \ell \geq 1$, such that every $K_t$-minor-free graph has a tree-decomposition of adhesion $\leq \ell$ and each torso is $(g, p, k, a)$-embeddable. We refer to the family of graphs which satisfy these constants as $\mathcal{G}(g, p, k, a)$. 
+\end{theorem}
+In fact, there exists a function $t(g, p, k, a)$ such that if a graph has a tree-decomposition of adhesion $\leq \ell$ and each torso is $(g, p, k, a)$-almost embeddable, then $G$ has no $K_t$ minor. Joret and Wood\cite{joretCompleteGraphMinors2013} found that
+\begin{theorem}[Bounds on Graph Minor Structure Theorem\cite{joretCompleteGraphMinors2013}]\label{thm:graph_structure_bound_theorem}
+	For all graphs $G$,
+	$\had(G) \leq a + 48(k + 1)\sqrt{g + p} + \sqrt{6g} + 5$. Moreover, there exists an integer $n \geq a + 1 4 k\sqrt{p + g}$ such that $K_n$ is a minor of some $\mathcal{G}(g, p, k, a)$ graph.
+\end{theorem}
+
+\section{Graph Minor Theorem}\label{sec:Graph Minor Theorem}
+We move on to the most important and deepest theorem in structural graph theory, the Graph Minor Theorem. This proof was proven in a series of 20 papers by Robertson and Seymour, from 1983 to 2004. As part of the proof, the Graph Minor Structure Theorem was developed, as we have outlined above. 
+\begin{theorem}[Graph Minor Theorem \cite{robertsonGraphMinorsXX2004}]
+	Every infinite family of graphs contains two distinct graphs $G$ and $H$ such that $H$ is a minor of $G$.
+\end{theorem}
+Equivalently, this theorem states that:
+\begin{theorem}
+	Every minor-closed family of graphs can be characterised by a finite set of forbidden minors.
+\end{theorem}
+Importantly, graphs of bounded genus can be characterised as a set of forbidden minors.
+For planar graphs, the two forbidden minors are $K_5$ and $K_{3,3}$. This was proven by Wagner \cite{wagnerUeberEigenschaftEbenen1937}. 
+For graphs that can be embedded on a torus, there are at least 17,523 graphs which are forbidden minors, with a database maintained by Myrvold and Woodcock\cite{myrvoldLargeSetTorus2018}. 
+
+\section{Bounds of pagenumbers of graphs}\label{sec:BoundedPagenumber} 
+\subsection{Tree-decomposition into bounded page number components}\label{ssec:Clique_sum_Pagenumber_bound}
+
+This proof has been adapted into the language of tree-decompositions. 
+\begin{theorem}[Hickingbotham and Wood \cite{hickingbothamStackNumberCliqueSum2023}]\label{thm:clique_sum_pagenumber_bound}
+	Let $G$ be a graph with a tree-decomposition $(B_x: x \in V(T))$ where each torso $G \langle B_x \rangle$ has pagenumber $\leq s$ and $\cup_{x \in V(T)} G \langle B_x \rangle$ is $c$-colourable. Additionally, we have that the adhesion of this tree is at most $\ell$.
+	 Then $\pn(G(\mathcal{G}, T)) \leq cs + \ell$.  
+\end{theorem}
+\subsubsection{Bounds on pagenumbers of planar graphs}
+This theorem also tells us that pagenumbers of planar graphs are bounded.
+
+\begin{theorem}\label{thm:Planar Graph Hickingbotham Bound}
+	Let $G$ be a planar graph. Then $\pn(G) \leq 11$.
+\end{theorem}
+
+We will use the corollary \cref{corr:planar_graphs_4_connected_cliqesums}. We will also use the fact that all planar graphs are $4$-colourable \cite{appelEveryPlanarMap1989} and the fact that all 4-connected planar graphs are Hamiltonian, from Tutte \cite{tutteTheoremPlanarGraphs1956}.
+
+\begin{theorem}[Tutte\cite{tutteTheoremPlanarGraphs1956}]\label{thm:4-connected_planar_ham_cycle}
+	All 4-connected planar graphs are Hamiltonian.
+\end{theorem}
+
+\begin{lemma}\label{lem:clique_sum_connected}
+	All graphs are clique-sum trees of $k$-connected subgraphs with adhesion at most $k-1$.
+\end{lemma}
+\begin{proof}
+	We have that from Menger's theorem that if a graph $G$ is not $k$-connected, we can find a separator of size at most $k-1$ such that we have sets $A$ and $B$. Then we repeat this operation on $A$ and $B$ and we can construct a clique-sum tree where every component is $k$-connected and the adhesion size is at most $k-1$. 
+\end{proof}
+
+\begin{corollary}\label{corr:planar_graphs_4_connected_cliqesums}
+	All planar graphs $G$ have tree-decompositions with the torsos being $4$-connected planar graphs and adhesion at most $3$.
+\end{corollary}
+
+
+\begin{proof}[Proof \cref{thm:Planar Graph Hickingbotham Bound}]
+	Let $G$ be planar. Then $G$ has a tree-decomposition of adhesion size at most $3$ with the torsos being $4$-connected, from \cref{lem:clique_sum_connected} However, this implies that the torsos are Hamiltonian, from Tutte \cite{tutteTheoremPlanarGraphs1956}, thus the number of pages needed for each torso is $2$. Therefore from \cref{thm:clique_sum_pagenumber_bound}, we have that the pagenumber is at most $2 \times 4 + 3 = 11$. 
+\end{proof}
+\subsection{Bounded treewidth and page number}\label{ssec:Bounded_Treewidth}
+\begin{theorem}[Ganley + Heath\cite{ganleyPagenumberTrees2001}]\label{thm:bded_treewidth_bded_pagenumber}
+	Every graph $G$ with $\tw(G) \leq k$ has $\pn(G) \leq k + 1$. 
+\end{theorem}
+We have a simpler proof if the tree is a path. We go from one end of the path to the other, and add vertices to the book-embedding in the order of the first time they appear. Then we colour each vertex such that in each bag, no two vertices are assigned the same colour. The number of colours necessary is at most $k + 1$ as the clique number of $G$ is at most $k + 1$. Furthermore, the intersection graph of the subpaths are a perfect graph. Therefore, we can colour $G$ with at most $k + 1$ colours. Then we colour $uv$ according to the vertex $u$ or $v$ depending on which comes first. This is a valid book-embedding. If $uv$ and $wx$ cross where $u < w < v < x$, then this means that $u, v, w$ share a bag, and so does $v, w, x$. But this means that $u$ and $w$ are in the the same bag, thus they are assigned different colours. 
+
+\subsection{Planar graphs}\label{ssec:Planar_Graphs}
+\begin{theorem}[Yannakakis \cite{yannakakisEmbeddingPlanarGraphs1989}] \label{thm:4Pages_Planar}
+	Planar graphs can be embedded on at most four pages.
+\end{theorem}
+We have shown above a proof that the number of pages necessary to embed a planar graph is bounded. However, the proof given by Yannakakis is tight, as there exist planar graphs that need four pages \cite{yannakakisPlanarGraphsThat2020} \cite{kaufmannFourPagesAre2020}. We need the fact that the number of pages to embed a planar graph is bounded for proving that graphs embedded on a surface of bounded genus has bounded pagenumber. 
+
+\subsection{Graphs embedded on a surface of bounded genus}\label{ssec:pagenumber_bounded_genus}
+\begin{theorem}[Heath and Istrail\cite{heathPagenumberGenusGraphs1992}]\label{thm:Genus_pagenumber_bound}
+	Let $g$ be the genus of a graph $G$. We have that for all graphs $G$, $\pn(G) \leq O(g)$ for some $g$.
+\end{theorem}
+Note that this bound extends the one found by Yannakakis \cite{yannakakisEmbeddingPlanarGraphs1989} to graph families of bounded genus. 
+The best known bound is $O(\sqrt{g})$, found by Malitz\cite{malitzGenusGraphsHave1994}.
+
+\section{Conclusion}\label{chap:conclusion}
+We conclude this report by explaining the current literature involving $K_t$-minor free graphs with bounded pagenumber. We define $K_t$-minor free graphs, and what it means for a graph to have bounded pagenumber. We also discuss one of the most important theorems for characterising graphs with $K_t$-minor free graphs and some important results that will be useful in proving that $K_t$-minor free graphs have bounded pagenumber. We believe that with the current literature on the topic of both $K_t$-minor free graphs and graphs of bounded pagenumber, we will have a result. 
+\printbibliography
+\end{document}

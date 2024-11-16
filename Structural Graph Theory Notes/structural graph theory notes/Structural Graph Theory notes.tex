@@ -1,0 +1,903 @@
+\documentclass[]{article}
+\usepackage[margin = 1in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{url}
+
+% Commands
+\newcommand{\tree}{\mathcal{T}}
+\newcommand{\tw}{\text{tw}}
+\newcommand{\had}{\text{had}}
+\newcommand{\pw}{\text{pw}}
+\newcommand{\td}{\text{td}}
+\newcommand{\bn}{\text{bn}}
+\newcommand{\ltw}{\text{ltw}}
+% Environments
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{example}[theorem]{Example}
+
+\numberwithin{theorem}{section}
+\numberwithin{equation}{section}
+
+%opening
+\title{Structural Graph theory}
+\author{Eric Luu}
+
+\begin{document}
+
+\maketitle
+
+\section{Treewidth}
+
+\begin{definition}[Tree-decomposition]
+	The tree-decomposition $\tree$ of a graph $G$ is defined as a tree $T$ with associated \textit{bags} $\lbrace B_x : x \in V(T) \rbrace$ such that:
+	\begin{itemize}
+		\item for all $v \in V(G)$, the subset of vertices $\lbrace x \in V(T): v \in B_x \rbrace$ in $V(T)$ induces a connected subtree in $V(T)$.
+		\item For all edges $vw \in E(G)$, there exists a bag $B_x$ such that both $v$ and $w$ are in the bag $B_x$.
+	\end{itemize}
+\end{definition}
+We refer to the vertices of the tree $T$ as \textit{nodes}. 
+The \textit{width} of the tree decomposition $\tree$ is defined as $\max \lbrace |B_x| - 1 : x \in V(T) \rbrace$. We define the \textit{treewidth} of a graph $G$ as such:
+
+
+\begin{definition}
+	The treewidth of a graph $G$, denoted as $\tw(G)$, is defined to be the smallest width for all tree decompositions of the graph $G$.
+\end{definition}
+The reason why the $-1$ appears in the definition of the with of a tree decomposition is because the definition wanted the treewidth of a forest to be 1. However, this causes some notational confusion.
+\begin{example}
+	$\tw(G) = 1$ if and only if $G$ is a forest.
+	\begin{lemma}
+		If $G$ is a forest, then $\tw(G) = 1$.
+	\end{lemma}
+	\begin{proof}
+		Suppose $G$ is a tree. Root the graph $G$ at the vertex $r$. Then let $T = G$ and $B_x:= \lbrace x, p \rbrace$ where $p$ is the parent of $x$. The bag $B_r$ will just contain $r$. Then all edges $vw$ will be between parent $v$ and child $w$, so it will be in bag $B_w$. Finally, the subgraph induced by vertex $x$ in $T$ will be $x$ and the children of $x$, which is a connected subtree.
+		
+		If $G$ is a forest, then we perform this operation on every connected component of $G$ and connect the roots to form a new tree. Then this tree is a tree-decomposition. This forms a tree-decomposition of width at most 1. 
+	\end{proof}
+	\begin{lemma}
+		If $\tw(G) = 1$, then $G$ has no cycles.
+	\end{lemma}
+	\begin{proof}
+		If $G$ has a cycle $C$, then the treewidth cannot be 1. This is because if there is a tree decomposition $\tree$ where the size of each bag is at most 2, then as the graph must have every edge, then every edge in $C$ is in separate bags. However, we have that for any vertex $v$ in $C$ to have an induced connected subgraph in $T$, then it follows that the cycle $C$ is also in $T$. Thus $T$ is not a tree, and this is not a valid tree-decomposition. 
+	\end{proof}
+\end{example}
+\begin{lemma}[Helly Property]
+	Let $T_1, ..., T_k$ be subtrees of a tree $T$ such that for every pair of trees, there is a vertex in common. Then there exists a vertex which is common to all trees.
+\end{lemma}
+\begin{proof}[Helly property]
+	If $T_1$, $T_2$ and $T_3$ are subtrees of $T$ such that the vertex sets are pairwise nonempty, then there is a common vertex in all three subtrees. If this is not the case, denote $v_1$ as a vertex in the intersection of $T_1$ and $T_2$, $v_2$ as the vertex in $T_1 \cap T_3$, and $v_3$ as the vertex in $T_2$ and $T_3$. Then there exists a unique path $P$ in $T_1$ from $v_1$ to $v_2$. Choose two vertices $x$ and $y$ on $P$ such that they are disjoint....
+\end{proof}
+
+\begin{theorem}[Clique theorem]
+	In any tree-decomposition of $G$, for every clique $C$ in $G$, there exists a node $x \in V(T)$ such that $C \subseteq B_x$. 
+\end{theorem}
+
+\begin{proof}
+	Let $\tree$ be a tree-decomposition. Every vertex $v$ induces a connected subtree in $T$, call it $T_v$. Then for any two vertices $x, y$ in $C$, we have that $T_x$ and $T_y$ must intersect as the edge $xy$ is inside a bag $B_z$ corresponding to a node $z$. Then by the Helly property, there exists a node $v$ such that $C \subseteq B_v$.
+\end{proof}
+
+\begin{corollary}
+	$\tw(K_n)$ is $n-1$. 
+\end{corollary}
+
+\begin{theorem}
+	If $H$ is a minor of $G$, then $\tw(H) \leq \tw(G)$. 
+\end{theorem}
+\begin{proof}[Proof of minor]
+	Suppose we have a tree-decomposition $\tree$ of $G$. If we delete an edge in $G$, then $\tree$ remains a valid tree-decomposition. If we delete a vertex $v$, then $\tree$ where we remove $v$ from every bag in $\tree$ is also a valid tree-decomposition. If we contract an edge $vw$, creating a new vertex $u$, then relabeling $v$ and $w$ in all bags to $u$ is a valid tree-decomposition as the induced subtree of $u$ is the union of the induced subtrees of $v$ and $w$, and every neighbor of $v$ or $w$ is a neighbor of $u$. But the edges in the neighborhood do not change. Thus this is a valid tree-decomposition, with width at most the width of $\tree$.
+\end{proof}
+
+\begin{example}
+	The treewidth of an outerplanar graph is at most 2.
+\end{example}
+\begin{proof}[Proof of outerplanar treewidth.]
+	Let $G$ be the outerplanar graph, and let $G'$ be the triangulation of $G$. As $G$ is a minor of $G'$, $\tw(G) \leq \tw(G')$. We look at the \textit{weak dual} of $G'$. This is a tree $T$, where every node $v_f$ in $T$ corresponds to a face $f$ in $G'$. Then let $B_{v_f}$ be the bag of the tree-decomposition, where $B_{v_f}$ is the set of vertices on the boundary of the face $f$. Then the tree $T$ with bags $B_{v_f}$ is a valid tree-decomposition of $G'$, where every bag has at most 3 vertices. Thus, $\tw(G) \leq 2$. 
+\end{proof}
+
+\subsection{Different characterisations of treewidth}
+\subsubsection{$k$-trees}
+We define a $k$-tree inductively. We have that the complete graph $K_k$ is a $k$-tree, and if $G$ is a $k$-tree, then we add a new vertex to $G$ that is adjacent to $k$ vertices that form a clique of size $k$ in $G$ results in a $k$-tree. 
+A $k$-tree is a maximal graph with treewidth $k$. $\tw(G) \leq k$ if and only if $G$ is a subgraph of a $k$-tree. 
+
+\section{Separators}
+A subset $X$ of $V(G)$ is a \textit{balanced separator} of $G$ if each component of $G - X$ has at most $|V(G)|/2$ vertices. This implies that we can partition the vertices of $G$ into sets $A$ and $B$ such that there are no $AB$-edges and the size of $A$ and $B$ is at most $2/3 |V(G)|$. This is because we can order the components from smallest to largest and partition them into sets $A$ and $B$ where the sizes are at most $2/3 |V(G)|$.
+
+\begin{theorem}
+	For all graphs $G$, there exists a balanced separator of size $\tw(G) + 1$. 
+\end{theorem}
+\begin{proof}[Proof of balanced separator]
+	We take a tree-decomposition $\tree$ of treewidth $\tw(G) - 1$. For any edge $xy$ in $T$, denote the largest subtree containing $x$ that does not contain $y$ as $T_{x,y}$, and similarly denote $T_{y, x}$ as the same thing. If the size of the union of the corresponding bags of the nodes of $T_{x,y}$ is larger than the size of the union of bags in $T_{y, x}$, orient the edge $xy$ to point from $y$ to $x$, otherwise orient it the other way. Do this for every edge. Then let $x$ be the node where all arrows are pointing inwards, and let $B_x$ be the corresponding bag. Then $B_x$ is a separator of $G$ as we have that at most $|V(G)|/2$ vertices are in any component of $T$ by definition. Thus $B_x$ is a balanced separator of $G$. 
+\end{proof}
+
+\subsection{Subset theorems}
+\begin{theorem}
+	For all graphs $G$, and all subsets $S$ of $V(G)$, there exists an $X$ where $|X| \leq \tw(G) + 1$ and each component of $G - X$ has $\leq |S|/2$ vertices in $S$. 
+\end{theorem}
+\begin{proof}
+	Do the steps above but instead of weighing each vertex the same, you weigh a vertex $v$ to be 1 if it is in $S$ and 0 if it is not. 
+\end{proof}
+
+\begin{theorem}
+	For all graphs $G$, and all subsets $S$ of $V(G)$, there exists  two subgraphs $G_1$ and $G_2$ such that $G = G_1 \cup G_2$ and for all $i \in \lbrace 1, 2 \rbrace$, $|S \cup V(G_i) | \leq 2/3 |S|$.
+\end{theorem}
+\begin{proof}
+	Use the theorem above. Then we can form $G_1$ and $G_2$ to have at most $2/3 |S|$ the number of vertices in $|S|$, by sorting the subsets by the number of vertices in $S$. 
+\end{proof}
+
+\subsection{Bounds on treewidth.}
+\begin{theorem}
+	Let $G$ be a graph such that for all subsets $S \subseteq V(G)$ there exists another subset $x \subseteq V(G)$ such that $|X| \leq k$ and each component of $G - X$ has at most $|S|/2$ vertices in $S$. Then $\tw(G) \leq 3k$. 
+\end{theorem}
+
+\begin{lemma}
+	Let $G$ be a graph such that for all subsets $S \subseteq V(G)$ of size $2k + 1$ there exists an $X \subseteq V(G)$ such that $|X| \leq k$ and each component of $G - X$ has at most $k$ vertices in $S$. Then For all $S \subseteq V(G)$ where $|S| \leq 2k+1$ there exists a tree-decomposition of $G$ with width at most $3k$ and there exists a bag containing $S$. 
+\end{lemma}
+\begin{proof}
+	Suppose $|V(G)| \leq 3k + 1$. Then place all of the vertices in a single bag. Then this is a valid tree-decomposition with width at most $3k$ containing all $S$. 
+	Now assume $|V(G)| \geq 3k + 2$ and $|S| = 2k + 1$. If $S \leq 2k + 1$, add arbitrary vertices to $S$. Then there exists a subset $X \subseteq V(G)$ such that $|X| \leq k$ and each component of $G - X$ has at most $k$ vertices in $S$. Let the components of $G - X$ be $G_1, G_2, ... G_p$. Then we can do induction on $(G_i, S_i \cup X)$ to have a tree-decomposition of $G_i$ with width at most $3k + 1$. Then for each of the tree-decompositions rooted at the node with bag containing $S_i \cup X$, we add on a parent vertex to all of those tree-decompositions of $X \cup S$ with width at most $3k + 1$.  This is a tree-decomposition of $G$ of width at most $3k + 1$ with the root vertex containing $S$ by definition. 
+\end{proof}
+
+\section{Tree-partitions}
+\newcommand{\tpw}{\text{tpw}}
+
+For a graph $G$, a \textit{tree-partition} of $G$ is a tree $T$ with associated partition of the vertices of $G$ into bags $ \lbrace B_x : x \in V(T) \rbrace$ such that if $vw$ is an edge in $G$, then $v$ and $w$ are in the same bag, or the edge $xy$ is in $E(T)$, where vertices $x$ and $y$ have corresponding bags $B_x$ and $B_y$ containing $v$ and $w$ respectively. The \textit{width} of the tree-partition is defined as the largest bag in the tree-partition. The tree-partition width of a graph $G$, denoted as $\tpw(G)$, is the smallest width of all tree-partitions. 
+
+
+\begin{theorem}[Distel + Wood]
+	For all graphs $G$, $\tpw(G) \leq 18 (\tw(G) + 1) \Delta(G)$. 
+\end{theorem}
+
+\begin{lemma}
+	Fix $k$ and $d$. Let $G$ be a graph where $\tw(G) \leq k - 1$ and $\Delta(G) \leq d$. Then for any set $S \subseteq V(G)$ and $4k \leq |S| \leq 12kd$, there exists a tree-partition $\left( B_x : x \in V(T) \right)$ with width at most $18kd$ and bag $B_z$ where $deg_{T}(z) \leq \frac{|S|}{2k} - 1$ and $|B_z| \leq 3/2 |S| - 2k$.
+\end{lemma}
+\begin{proof}
+	
+	Case 0: $|V(G)| < 4k$: We place all the vertices in the same bag. Size of bag is $< 4k$, so the bag is definitely less than $18kd$. 
+	\par
+	Case 1: $|V(G) - S| \leq 18kd$. Let $T$ be the tree on two vertices ${x, z}$, where $B_x = V(G) - S$ and $B_z = S$. Then we have that $\delta(T) = 1$ and $deg_T(z) = 1$, which satisfies the requirements above. We have that $|B_z| \leq 3/2 |s| - 2k$ and $deg_T(z) \leq |S|/2k - 1$. 
+	\par
+	Case 2: $S$ small case. $4k \leq |S| \leq 12k$. Let $S' := \bigcup \lbrace N_G(v) - S : v \in S \rbrace$. Then $|S'| \leq d |S| \leq 12kd$. If $|S'| < 4k$, then add arbitrary vertices to $S'$ from $G - S - S'$ such that $|S'| = 4k$. Now $4k \leq |S'| \leq 12kd$. By the induction hypothesis, there exists a tree-partition of $G - S$ with width $\leq 18kd$ and $S'$ in one bag. Then we add the bag $B_z = S$ to the tree that is connected only to $S'$. We have that as $4k \leq |S|$, it implies that $|S| \geq 3/2 |S| - 2k$, so $|B_z| \leq 3/2 |S| - 2k$ and $|S| \leq 12k$. Finally, $deg_T(B_z) = 1 \leq |S|/2k - 1$.
+	\par
+	Case 3: $S$ large case. $12k + 1 \leq |S| \leq 12kd$. There exists induced subgraphs $G_1$, $G_2$ of $G$ where $G_1 \cup G_2 = G$ and $|G_1 \cap G_2| \leq k$, where $|S \cap V (G_i)| \leq 2/3 |S|$ for each $i$ in $\lbrace 1, 2 \rbrace$. Then let $S_i = (S \cap V(G_i)) \cup (G_1 \cap G_2)$ for each $i$ in $\lbrace 1, 2 \rbrace$. We have that $|S_2| \geq |S - V(G_1)| \geq 1/3 |S| \geq 4k$. By symmetry, $|S_1| geq 4l$. For an upper bound, $S_i \leq 2/3 |S| + k \leq 8kd + k \leq 12kd$. Therefore, $4k \leq |S_i| \leq 12kd$ for each $i$ in $\lbrace 1, 2 \rbrace$. Thus by induction, there exists a tree-partition of $G_i$ with width at most $18kd$, such that $\delta(T_i) \leq 6d$ and there is a $z_i$ such that $S_i \in B_{z_i}$, $|B_{z_i}| \leq 3/2 |S_i| - 2k$, $\deg_{T_i}(z_i) \leq |S_i|/2k - 1$. Then form the tree of $G$ by merging $z_1$ and $z_2$ together to form $z$, and let $B_z = B_{z_1} \cup B_{z_2}$. Then this is a tree-partition of $G$. By construction, $S \subseteq B_z$ and $|B_z| \leq |B_{z_1}| + |B_{z_2}| - |G_1 \cap G_2|$. Using the induction hypothesis, this is less than $18kd$, and the degree of $z$ is $|S|/2k - 1 < 6d$. Thus shown.  
+\end{proof}
+
+\section{$O(\sqrt{n})$-bounded treewidth}
+A family of graphs $\mathcal{G}$ has $O(\sqrt{n})$ bounded treewidth if, as the number of vertices increases in $\mathcal{G}$, the treewidth is bounded above by a constant times $\sqrt{n}$. We shall show that all planar graphs have bounded treewidth, and can extend this definition to graph families of bounded genus and crossings. [Dujmovic, Morin, Wood] 
+
+\subsection{Layered treewidth}
+A \textit{layering} of a graph $G$ is a partition of the vertex set of $G$ into sorted sets $V_1, V_2, ..., V_k$ such that for all edges $vw \in E(G)$, if $v \in V_i$ and $w \in V_j$ then $|i - j| \leq 1$. The \textit{layered treewidth number} $\ltw(G)$ is defined as the smallest $k$ such that there exists a layering $V_1, V_2, ...$ of $V(G)$ and there is a tree-decomposition $(B_x: x \in V(T))$ and $|V_i \cap B_x| \leq k$ for all $i$ and all $x$. 
+\begin{theorem}
+	Planar graphs have $\ltw$ at most 3. 
+\end{theorem}
+\begin{proof}
+	If $G$ is a planar triangulation, and $T$ is a bfs spanning tree, then the vertices ordered by distance from the root $r$ of $T$ is a layering of $G$. Then consider the dual graph $G^*$. Then there exists a spanning tree of $G^*$, $T^*$, such that no edge in $T^*$ crosses over an edge in $T$. Call this spanning tree the cotree of $G$. Then let $\left( B_x: x \in V(T^*) \right)$ be bags. For a face $\alpha$, the set of vertices $v_1, v_2, v_3$ on the border of $\alpha$ and the vertices on path in $T$ from $v_i$ to $r$ for all $i$ in $\lbrace 1, 2, 3 \rbrace$ is $B_\alpha$. Every edge is on the border of some face, so every edge is in $T^*$. If $x$ is a vertex, then the subtree containing $x$ goes to all the faces incident with the descendants of $x$, which is connected. Thus this is a tree-decomposition. Finally, the intersection between $V_i$ and $B_\alpha$ is at most 3 as at most 3 vertices can be on the same layer by the construction. Thus $ltw(G) \leq 3$. 
+\end{proof}
+
+\subsection{Upper bound on treewidth}
+If $G$ has $n$ vertices with layered treewidth $k$, then $G$ has treewidth $2 \sqrt{kn} - 1$.
+\begin{proof}
+	Let $V_1, V_2, ..., V_t$ be the layering of $G$ with layered treewidth $k$. Then define $p = \lceil \sqrt{nk} \rceil$. For $j \in \lbrace 1, ..., p \rbrace$, let $W_j = V_j \cup V_{p + j} + V_{2p + j}$, such that $W_j$ separates out the layers. As $W_1, ..., W_p$ is a partition of $G$, as there is a partition $W_j$ with the size at most the average such that $W_j \leq n/p \leq \sqrt{kn}$, then we can cut out the layers of $W_j$ to just have connected components with $p-1$ consecutive layers. Each connected component of $G - W_j$ can be subdivided with the tree-decomposition into bags of size at most $k(p-1)$, thus the treewidth of each connected component is $k(p-1) - 1 = \sqrt{kn} - 1$. Putting each connected component together, we add $W_j$ to every bag in the decomposition and add $W_j$ as another bag to turn the forest into a tree. This will give us a tree-decomposition of $G$ with width at most $\sqrt{kn} - 1 + |W_j| \leq 2 \sqrt{kn} - 1$. 
+\end{proof}
+
+\begin{example}
+	If $G$ is a $n \times n$ grid, then $\tw(G) = n$, but $\ltw(G) = 2$. 
+\end{example}
+
+\begin{theorem}
+	If $G$ is a triangulation of a surface with Euler genus $g$, then $G$ has layered treewidth at most $2g + 3$. 
+\end{theorem}
+
+\begin{proof}
+	We have that $|E(G)| = 3n + 3g - 6$ and $|F(G)| = 2n + 2g - 4$. If $T$ is a $BFS$ spanning on $G$, and $G^*$ is its dual, then we define a new graph $D$ such that $V(D) = V(G^*) = F(G)$ and $xy$ is an edge in $D$ if and only if $xy$ does not cross an edge of $T$. Note that $D$ is not a tree if $g > 0 $. Finally, the number of edges in $D$ is equal to $|E(G)| - |E(T)| = 3n + 3g - 6 - (n-1) = 2n + 3g - 5$. By definition, $D$ is connected, so let $T^*$ be any spanning tree of $G$, rooted at $r$. $|E(T^*)| = 2n + 2g - 5$, so $|E(D)| - |E(T)| = g$. Denote the $g$ edges as $v_1w_1, v_2w_2, ..., v_gw_g$. As $D$ has $g$ edges not in $T^*$, for every face $f = xyz$ of $G$, let $B_f := P_x \cup P_y \cup P_z \bigcup_{i = 1}^g P_{v_i} \cup P_{w_i}$, where $P_x$ is the unique path in $T$ from $x$ to $r$. Thus $\ltw(G) \leq 2g + 3$. 
+\end{proof}
+\begin{corollary}
+	The treewidth of a graph with genus $g$ is at most $2\sqrt{(2g + 3) n } -1$. 
+\end{corollary}
+
+\subsection{Bounded genus and crossings}
+A graph is $(g, k)$-planar if there exists an embedding of $G$ on a genus $g$ surface with at most $k$ crossings per edge.If $G$ is $(g, k)$-planar, we shall show that $G$ has treewidth of at most $2\sqrt{(4g + 6)(k + 1) n}$. For fixed $g$ and $k$, this admits a treewidth of $G$ which is $O(\sqrt{n})$. 
+\begin{theorem}{\url{https://link.springer.com/chapter/10.1007/978-3-319-27261-0_8}}
+	Every $(g, k)$-planar graph $G$ has layered treewidth at most $(4g + 6)(k + 1)$. 
+\end{theorem}
+
+\begin{proof}
+	Draw $G$ on the plane with an arbitrary orientation of the edges. Then replace every crossing with a new dummy variable to form $G'$. From above $\ltw(G') \leq 2g + 3$. Let $T'$ be the tree decomposition of $G'$, and let $V_0', V_1', ...$ be the layering of $G'$. For each dummy vertex $x$ which crosses the arcs $vw$ and $ab$, where $w$ and $b$ are the tail of the arcs respectively, replace $x$ in $T$ with $w$ and $b$. Then this is tree-decomposition with layered treewidth of $2(k+1) (2g + 3)$. Thus shown. 
+\end{proof}
+
+\subsection{$K_t$-minor-free graphs}
+Refer to MTH3000 report for definitions.
+
+\begin{theorem}{\url{https://arxiv.org/abs/2104.06627}}
+	If $G$ is $K_t$-minor-free, then $tw(G) \leq t^{3/2} n^{1/2}$. 
+\end{theorem} 
+
+\begin{lemma}{\url{https://www.ams.org/journals/jams/1990-03-04/S0894-0347-1990-1065053-0/}}
+	Let $G$ be a graph and $A_1, ..., A_r$ be nonempty subsets of $V(G)$. Let $x \in \mathbb{R}$, $x \geq 1$. Then either:
+	\begin{enumerate}
+		\item There exists a tree $T$ in $G$ where $|V(T)| \leq x$ and $V(T) \cap A_i$ is nonempty for all $i$, or,
+		\item There exists a set $Y$ in $V(G)$ of size at most $(r-1)n/x$ such that no component of $G-Y$ intersects all of $A_1, ..., A_r$. To rephrase, if $C$ is a component of $G - Y$, then we have there exists a set $A_i$ such that $C$ and $A_i$ are disjoint. 
+	\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+	\newcommand{\dist}{\text{dist}}
+	We form a path in $G$ of $A_1 \rightarrow A_2 \rightarrow ... \rightarrow A_r$ such that there exists a path from $A_1$ to $A_r$ passing through all of $A_i$. We then form a new graph $J$ by taking $r-1$ copies of $G$ and between copies $G_i$ and $G_{i+1}$, there is an edge between the copied vertices of $A_{i+1}$ in $G_i$ and $A_{i+1}$ in $G_{i+1}$. Denote the sets $X$ and $Y$ to be $A_1$ in $G_1$ and $A_r$ in $G_{r-1}$ respectively. 
+	\par
+	Then if $ \dist_J(X, Y) \leq x$, then the path $|P|$ is less than $X$, so we project $P$ back to $G$ and eliminate all loops to form a path, and therefore a tree, of length at most $x$. 
+	\par
+	If $ \dist_J(X, Y) > x$, then there is a bfs layering in $J$ where $L_i =  \lbrace v \in V(J) : \dist_J(X, v) = i \rbrace$. By construction, there exists a $j$ such that $|L_j| \leq (r-1)n/x$ and in the projection, $L_j$ is a separator. 
+\end{proof}
+
+\begin{theorem}[Illingsworth, Scott, Wood]
+	For all $t \geq 5$, if $G$ is $K_t$-minor-free, then $G \subseteq H \boxtimes K_{\lfloor m \rfloor}$, where $\tw(H) \leq t-2$ and $m = \sqrt{(t-4)n}$.
+\end{theorem}
+\begin{proof}
+	We shall prove something stronger. For all $t \geq 5$ and $K_t$-minor-free graphs $G$, for all $r \leq t - 1$, and all $K_r$-models $(U_1, ..., U_r)$ in $G$ with $1 \geq |U_i| \geq m$ for all $i$, there exists a $H$-partition of $G$ with width $m$ and $U_1, ..., U_r \in V(H)$, and $tw(H) \leq t-2$, where the width of a partition is the size of the largest bag.
+	\paragraph{Base case}
+	Let $U = \bigcup_i U_i$. Then suppose if $|V(G)| = U$, then $(U_1, ..., U_r)$ is the desired $H$-partition where $H = K_r$ has treewidth $r-1 \leq t-2$. 
+	\paragraph{Inductive case}
+	Let $A_i = N_G(U_i) \ U$ for each $i$. If some $A_i$ is empty, then we use the induction hypothesis on $G - U_i$. There is a partition $H'$ of treewidth at most $t-2$ which has $(U_1, ...., U_{i-1}, U_{i+1}, ..., U_{r})$ as a set, with width at most $m$. Then the neighbourhood of $U_i$ is a clique on $r-1$ vertices, so $tw(H) = \max(tw(H'), r-1) \leq t - 2$. 
+	\paragraph{Disconnected $G-U$}
+	Suppose $G - U$ is disconnected. Then we can partition $V(G - U)$ into two s $C$ and $D$ such that there is no edge from $C$ to $D$. Let $G_1 = G[C \cup U]$ and $G_2 = G[D \cup U]$. Then by induction, there is a partition $H_1$, $H_2$ of $G_1$ and $G_2$ respectively of width at most $t-1$ and treewidth at most $s$ that contains $(U_1, ..., U_r)$ as a bag. Then we let $H$ be the model where we identify the two $H_1$ and $H_2$ models on the bag. Then $\tw(H) = \max(\tw(H_1), \tw(H_2)) \leq s$, with width of $H$ being at most $t-1$.
+	\paragraph{Connected $G-U$}
+	Use the lemma above and set $A_1, ... A_r$ to be $(A_1, ..., A_r)$ and set $x = m$. Then there exists a tree in $U$ which intersects with $A_i$ for all $i$, or there exists a set $Y$ such that $C$ separates out $C$ and $D$. We can show that the first scenario cannot happen as we have that $Y$ would be too large, so there must be a $Y$ such that this holds. Then $Y \leq (r-1)n/m \leq (tn)/\sqrt(tn) = \sqrt(tn) = m$, so this would be the required set $Y$. 
+\end{proof}
+
+\section{Algorithms on bounded treewidth}
+\subsection{Monadic Second-order logic}
+\begin{theorem}{Courcelle's theorem}
+	If a family of graphs $\mathcal{G}$ has bounded treewidth, then any graph property of any graph $G \in \mathcal{G}$ that can be expressed in Monadic Second-order logic can be decided in linear time. 
+\end{theorem}
+
+\section{Characterisations of $K_t$-minor free graphs}
+What is the structure of $K_t$-minor free graphs? We shall show that we can roughly characterise all $K_t$-minor free graphs as graphs that are products of a series of operations that preserve the treewidth. 
+\subsection{$K_t$-minor free minor-closed families}
+We define $\had(G)$ to be the largest $t$ such that $G$ has a $K_t$ minor. 
+\subsubsection{Planar graphs}
+\begin{theorem}
+	If $G$ is a planar graph, then $G$ is $K_5$-minor-free.
+\end{theorem}
+\begin{proof}
+	If $G$ is planar with $n$ vertices and $m$ edges, then we have that $m \leq 3n -6$. However, we have that $K_5$ has $5$ vertices and $10$edges, but we have that $ 10 > 3 \times 5 - 6$, so $K_5$ is not planar. As the family of planar graphs is minor-closed, then if $G$ is planar, then $K_5$ is minor-free.
+\end{proof}
+
+We can use a different argument to show that $K_{3,3}$ is not embeddable on the plane, by using the fact that $K_{3,3}$ is triangle-free. 
+(INSERT PROOF HERE)
+
+\subsubsection{Genus-g graphs}
+We define the genus $g$ of a surface to be 2 times the number of handles + the number of crosscaps. From topology, we have that we can add a handle to crosscaps to form 3 crosscaps. Therefore, the Euler characteristic $\chi = 2 - g$ for both orientable and non-orientable surfaces. Note that the genus is defined slightly differently from topology. We do this to allow non-orientable and orientable surfaces to coincide in definition.
+
+We can show that if $G$ has genus $g$, then if $G$ has $n$ vertices and $m$ edges, then $n - m + f = \chi = 2-g$, then as each face has at most 3 vertices and each edge is incident to two faces, we have that $f \leq 2m/3$. Therefore, $m \leq 3(n + g - 2)$, and if $K_t$ is embeddable on a genus $g$ graph, then $\binom{t}{2} \leq 3 (t + g - 2)$. Thus $t \leq \sqrt{6g} + 4$. So if a graph has genus $g$, then it is $K_t$-minor-free, where $t > \sqrt{6g} + 4$. 
+
+\subsubsection{Bounded treewidth graphs}
+\begin{theorem}
+	If $\tw(G) \leq k$, then $G$ is $K_{k+2}$-minor-free. 
+\end{theorem}
+\begin{proof}
+	We shall prove the contrapositive: If $K_t$ is a minor of $G$, then $tw(G) \geq t-1$.
+	If $K_t$ is a minor of $G$, and $\tw(G) \leq k$, then we have that $\tw(K_t) \leq \tw(G) \leq k$, but $\tw(K_t) = t-1 \leq k$, so $t \leq k + 1$. Thus shown a family of minor-closed which are $K_t$-minor free. 
+\end{proof}
+\subsubsection{Apex vertices}
+An apex vertex $v$ is added to a graph $G$ such that it has arbitrary edges. As such, it can simply dominate all other vertices in $G$. Then if $G$ is $K_t$-minor free, $G$ with the apex vertex $v$ is $K_{t+1}$- minor free. 
+\subsubsection{Clique-sums}
+The \textit{$k$-clique-sum} of two graphs $G$ and $H$, denoted as $G \# H$, is the graph obtained by performing a series of operation on the cliques of $G$ and $H$. We find cliques in $G$ and $H$, $C_G$ and $C_H$ respectively, such that $C_G$ and $C_H$ have size $k$. Then we identify the vertices in $C_G$ and $C_H$ so that $G$ and $H$ are connected to each other on this clique. 
+
+\begin{lemma}
+	If $G = G_1 \# G_2$,then $\had(G) = \max(\had(G_1), \had(G_2))$ and $\tw(G) = \max(\tw(G_1), \tw(G_2))$.
+\end{lemma}
+
+\begin{example}
+	If $G$ is the clique-sum of Euler genus $g$ graphs, then $G$ is $K_{\sqrt{6g} + 5}$-minor-free, but has unbounded genus.
+\end{example}
+
+\begin{theorem}[Wagner's theorem]
+	If $G$ is $K_5$-minor-free, then $G$ can be obtained from $\leq 3$-clique-sums of planar graphs and the Wagner graph $W_8$.
+\end{theorem}
+
+
+\subsection{Torsos and adhesion}
+Given a graph $G$ and a tree-decomposition $\tree$, the \textit{torso} of a bag $B_x$ of $T$ is the graph $G\langle B_x \rangle$, obtained from $G[B_x]$ where $vw$ is a vertex in $G\langle B_x \rangle$ if and only if $v,w \in B_x \cap B_y$, where $y$ is a neighbour of $x$ in $T$. So the set $B_x \cap B_y$ for all neighbours $y$ of $x$ in $T$ is a clique in $G\langle B_x \rangle$. 
+The \textit{adhesion} of a tree is defined as $\max(|B_x \cap B_y|)$ where $xy$ is an edge in $T$.
+
+\subsubsection{Vortices}
+Let $G$ be embedded on a surface $\Sigma$, and let $F$ be a face on $G$. Let $D$ be a disc in $\Sigma$ such that $D$ only intersects $G$ only on vertices on the boundary of $F$. We denote these discs as $G$-clean. 
+
+Then let $\Lambda = (x_1, x_2, ..., x_b)$ be a tuple of vertices on the boundary of $F$ such that they intersect $D$. Then we define a new graph $H$ such that $V(G) \cap V(H) = \Lambda$, and there is a path-decomposition of $H$ of bags $B_1, B_2, ... B_b$ such that $x_i \in B_i$ for all $i$. $H$ is denoted as a \textit{$D$-vortex} of $G$. The width of a $D$-vortex is the width of the path above, or $\max_i(|B_i| - 1)$. 
+
+Vortices were created to solve the problem of grid-like graphs with large treewidth, torsos and adhesion, yet are all $K_t$-free for bounded $t$. 
+\subsection{Robertson-Seymour theorem}
+Given $g, p, a \geq 0$, $k \geq 1$, a graph $G$ is $(g, p, k, a)$- almost embeddable if there exists an $A \subseteq V(G)$ with $|A| \leq a$, and there exists subgraphs $G_0, G_1, ...,  G_{p'}$ of $G$ such that:
+\begin{itemize}
+	\item $G - A = G_0 \cup G_1 \cup G_2 ... G_{p'}$
+	\item $p' \leq p$
+	\item There is an embedding of $G_0$ onto a surface $\Sigma$ of genus $\leq g$
+	\item There exists pairwise disjoint $G_0$-clean discs $D_1, D_2, ..., D_{p'}$ in $\Sigma$
+	\item $G_i$ is a $D_i$-vortex of width at most $k$.
+\end{itemize}
+
+\begin{theorem}[Robertson-Seymour graph structure theorem]
+	For all $t$, there exists $g, p, a \geq 0$, $k \ell \geq 1$, such that every $K_t$-minor-free graph has a tree-decomposition of adhesion $\leq \ell$ and each torso is $(g, p, k, a)$-embeddable. 
+\end{theorem}
+In fact, there exists a function $t(g, p, k, a)$ such that if a graph has a tree-decomposition of adhesion $\leq \ell$ and each torso is $(g, p, k, a)$-almost embeddable, then $G$ has no $K_t$ minor. One possible function is $t(g, p, k, a) = a + ck \sqrt{g + p}$. 
+
+\section{Path-width}
+We define the path-decomposition of a graph $G$ to be a sequence of bags $B_i$ such that the subsequence of bags containing a vertex $v$ induces a subpath and each edge $vw$ is in a bag $B_i$. Then we define the width of a path-decomposition as $\max_i \lbrace |B_i| \rbrace -1$, same as treewidth. The pathwidth of a graph $G$ is the minimum treewidth.
+\begin{example}
+	\begin{theorem}[Caterpillars]
+		Graphs have pathwidth at most 11 if and only if every connected component is a caterpillar (graphs where removing every leaf yields a path).
+	\end{theorem}
+	\begin{proof}[Caterpillars]
+		Suppose $G$ is a caterpillar graph and $p_1, p_2, ..., p_n$ is the central path, and the leaves of vertex $p_i$ are denoted as $v_{i, 1}, v_{i, 2} ..., v_{i, k}$. Then have the bags $(v_{1, 1}, v_1), (v_{1, 2}, v_1)... (v_{1, j}, v_1), (v_1, v_2), (v_{2, 1}, v_2), (v_{2,2}, v_2,)... $. We can see that each leaf appears once and each vertex on the central path is on a subpath of the path. Therefore, the pathwidth of $G$ is 1. If $G$ has pathwidth 1, then for each connected component, we choose a vertex $v$ in $B_1$ and a vertex $w$ in $B_n$, the final bag, and look at a path from $v$ to $w$. This path must go through every bag, thus the non-path vertices must have neighbour only of the other one in the bag and thus the graph is a caterpillar. 
+	\end{proof}
+	
+\end{example}
+\begin{example}
+	If a graph $F$ is a forest, then the pathwidth of $F$ is the largest pathwidth over all connected components.
+\end{example}
+\begin{example}
+	The pathwidth of a single vertex is 0.
+\end{example}
+\begin{example}
+	The pathwidth of a tree $T$ is $\min_{P \subset T} 1 + \pw(T - V(P))$ where $P$ is a path. 
+\end{example}
+
+\begin{proof}[Proof of inductive path-width]
+	To show $\pw(T) \leq 1 + \pw(T - V(P))$, we have that if $P$ is a path in $T$ with vertices $v_1, v_2, ...$, then consider the subtrees hanging off $v_i$ for all $i$. $T - V(P)$ will have a path-width and we can order each connected component such that they appear in the order of the trees. Then we have that adding $v_i$ to the bags of subtrees connected to $v_i$, and the bag $(v_i, v_{i+1})$ between the subtrees $v_i$ and $v_{i + 1}$ will yield a path-decomposition of width $1 + \pw(T - V(P))$. 
+	\paragraph{Other direction}
+	To show there exists a path $P$ such that $\pw(T) \geq 1 + \pw(T - V(P))$, we proceed by induction. Let $B_1, ... B_n$ be a path-decomposition of $T$. Let $x$ live in bag $B_1$ and $y$ live in bag $B_n$, the final bag. Then let $P$ be the unique path from $x$ to $y$. Then $P$ traverses through every bag in the path-decomposition. Then $\tw(T) \geq 1 + \tw(T - P)$ by induction. 
+\end{proof}
+
+We define a ternary tree to be a tree where every vertex has degree 1 or 4, except for the root $r$, which has degree 3. We define the complete ternary tree of edge-height $h$ to be the unique complete ternary tree where the distance from the root $r$ to any other vertex is at most $h$. Note that the treewidth of any tree is 1.
+\begin{lemma}
+	Let $T_h$ be the complete ternary tree of edge-height $h$. Then $\pw(T_h) = h$.
+\end{lemma}
+
+\begin{proof}
+	We shall show for any path $P$, $T_h - V(P)$ has a copy of $T_{h-1}$. Let $P$ be a path, and suppose that it goes the root $r$. Then as $P$ cannot go through all three subtrees of $T_h$ hanging off $r$, there must be a subtree which $P$ does not go through. $T - V(P)$ will contain this subtree, thus $\pw(T_h) \geq 1 + \pw(T - V(P)) \geq 1 + (h-1) = h$.
+	\paragraph{Lower bound}
+	There exists a path-decomposition of $T_h$ such that the size of each bag is at most $h + 1$. Order the leaves of the balanced ternary trees in the standard way, left to right when drawn with no crossings. Then let $B_i$ be vertices on the path from $r$ to the leaf $\ell_i$. Then this is a tree-decomposition with at most $h + 1$ vertices, thus $\tw(T_h) \leq h$.
+\end{proof}
+
+For complete binary trees of edge-height $h$, it is easy to show there is a path-decomposition of width $\lceil h/2 \rceil$. (Consider doing the same operation, but with half the vertices.)
+
+\subsection{Treedepth}
+We define the \textit{closure} of a rooted tree $T$ to be the the graph $G$ where $V(G) = V(T)$ and $vw$ is an edge in $G$ if and only if $v$ is an ancestor of $w$ in $T$.
+\begin{definition}
+	The treedepth of a graph $G$, denoted as $\td(G)$, is defined to be the minimum vertex-height of a rooted forest $T$ such that $G \subseteq $ closure of $T$.
+\end{definition}
+We have that this defines a path-decomposition of $G$ by enumerating through all the vertices of $T$ in the natural order with the bag $B_i$ is the path from leaf $\ell_i$ to $r$. The size of the bag is the vertex-height, thus $\pw(G) \leq \td(G) - 1$. As every path-decomposition is a valid tree-decomposition, $\tw(G) \leq \pw(G) \leq \td(G) - 1$. However, these parameters are not \textit{tied}. We say two parameters $p(G), q(G)$ of a graph are tied if there is a function $f$ such that $ p(G) \leq f(q(G))$ and $q(G) \leq f(p(G))$ for all graphs $G$. 
+Let $\mathcal{G}$ be the graph family $T_1, T_2, ...$ where $T_h$ is the complete ternary tree of height $h$. Then $\tw(G) = 1$ for all $G \in \mathcal{G}$, but $\pw(T_h) = h$, thus the pathwidth may be unbounded while the treewidth is constant. Let $\mathcal{G}$ be the set of paths $P_i$ for $i \in \mathbb{N}$. Then $\pw(P_i) =  1$, but $\td(P_i) = \lceil i/2 \rceil$. Therefore, the treedepth of graphs is not tied to the pathwidth, or to the treewidth.
+\subsubsection{Bounds on treedepth}
+\begin{lemma}
+	If $T$ is a tree, then $\td(T) \leq \log n$, where we take $\log = \log_2$. 
+\end{lemma}
+\begin{proof}[Proof of above lemma]
+	For all trees $T$, there exists a balanced separator with a single vertex $v$, from above. Therefore, $T-v$ has components of size at most $n/2$. Then we find the separators $w_1,... w_m$ of the other components of $T - v$ and we add an edge from $v$ to $w$, with tree-depth at most $\log(n/2) = \log(n) - 1$. Then $T$ has treedepth at most $\log(n) - 1 + 1 = \log n$. Thus shown. 
+\end{proof}
+
+\begin{corollary}
+	The tree-depth of a graph $G$ with treewidth $h$ is $O(h \log n)$.
+\end{corollary}
+The proof of this corollary is by calculating the tree-depth of the tree-decomposition of $G$, which is $O(\log n)$ (we may fudge numbers and bound the number of vertices in the tree-decomposition by the number of edges in $G$ to get the desired result).
+
+\section{Classification of graph families}
+As before, we could classify graph families in this way:
+\begin{enumerate}
+	\item $\tw(G) \leq O(1)$ for all $G \in \mathcal{G}$. These graph families will include trees and paths, so the pathwidth and treedepth is unbounded, but from the lemma above, $\tw(G) \leq O(\log n)$ for all graphs in the class, where we hide the treewidth.
+	\item $\tw(G) \leq O(n^{1/2})$ for all $G \in \mathcal{G}$.
+	\item $\tw(G) \leq O(n^{1- \varepsilon})$ fixed $\varepsilon > 0$, for all $G \in \mathcal{G}$.
+	\item $\tw(G \geq \Omega(n))$ for all $G \in \mathcal{G}$.
+\end{enumerate}
+We shall prove a statement relating the path-width and tree-depth of a graph $G$ for families of graphs of the form $\tw(G) \leq O(n^{1- \varepsilon})$. 
+\begin{theorem}
+	If $\mathcal{G}$ is a graph family such that $\tw(G) \leq O(n^{1- \varepsilon})$ for all $G \in \mathcal{G}$, then $\pw(G) \leq O(n^{1-\varepsilon})$ and $\td(G) \leq O(n^{1-\varepsilon})$ for all $G \in \mathcal{G}$.
+\end{theorem}
+We shall prove this using the following lemma. We define a \textit{hereditary class} $\mathcal{G}$ to be a class closed under vertex deletion. This is a weaker condition than minor-closure. 
+\begin{lemma}
+	Fix $c > 0$ and $\varepsilon$ in $(0, 1)$. Then suppose for all $n$-vertex graphs $G \in \mathcal{G}$, $G$ has a balanced separator of order at most $c n^{1-\varepsilon}$. Then every $n$-vertex graph $G \in \mathcal{G}$ has $\pw(G) \leq \td(G) \leq c' n^{1- \varepsilon}$. 
+\end{lemma}
+\begin{proof}
+	We use the balanced separator concept from earlier, and use induction on the number of verticesWe have that the balanced separator $S$ where $|S| \leq cn^{1-\varepsilon}$ and consider the connected components of $G - V(S)$. As $G$ is minor closed, then each connected component of $G - V(S)$ will have treedepth at most $c'(n/2)^{1 - \varepsilon}$, where $c' := \frac{c}{1 - 1/(2^{1-\varepsilon})}$. Then suppose we form a complete graph on $S$ and add edges from $S$ to all the vertices in $G - V(S)$ to form the closure of a tree of height at most $c n^{1 - \varepsilon} + c'(n/2)^{1 - \varepsilon}$. However, we have that:
+	\begin{align*}
+		c n^{1 - \varepsilon} + c'(n/2)^{1 - \varepsilon} &= c n^{1 - \varepsilon} + \frac{c}{1 - 1/(2^{1-\varepsilon})}(n/2)^{1 - \varepsilon}\\
+		&= \frac{1}{1 - 1/2^{1-\varepsilon}} (c n^{1 - \varepsilon}(1 - 1/(2^{1-\varepsilon})) + c (n/2)^{1 - \varepsilon})\\
+		&= c'n^{1 - \varepsilon}
+	\end{align*}
+\end{proof}
+thus the treewidth is bounded by $c' n^{1-\varepsilon}$. 
+
+\subsection{H-minor-free families}
+Let $\mathcal{G}_H:=$ the class of all $H$-minor free graphs.
+We have that $(\tw(\mathcal{G}_H), \pw(\mathcal{G})_H, \td(\mathcal{G})_H)$ are $O(n^{1/2})$ constants, where $n$ is the number of vertices. 
+\begin{theorem}[Robertson + Seymour + Illingsworth]
+	The statement: "There exists a constant $c$ such that for all $G \in \mathcal{G}_H$, $\pw(G) \leq c$" is equivalent to the statement: "$H$ is a forest".
+\end{theorem}
+
+\begin{proof}
+	Suppose $H$ is not a forest. Then $H$ has a cycle. However, the set of complete ternary trees has no $H$-minor and has unbounded path-width. The other direction is proven in \url{https://www.sciencedirect.com/science/article/pii/009589569190068U}. 
+\end{proof}
+
+Therefore, a minor-closed class $\mathcal{G}$ has bounded path-width if and only if $\mathcal{G}$ excludes some forest. The equivalent statement for treewidth is that: 
+"a minor-closed class $\mathcal{G}$ has bounded treewidth if and only if $\mathcal{G}$ excludes some planar graph". Proof by Robertson + Seymour, graph minors 1.
+\begin{lemma}
+	For all $n$-vertex planar graphs $G$, $G$ is a minor of the grid on $2n \times 2n$ vertices.
+\end{lemma}
+We also introduce the grid minor theorem as well.
+\begin{theorem}[Grid minor theorem]
+	There exists a function $f$ such that every $P_k \square P_k$-minor free graph has $\tw \leq f(k)$. 
+\end{theorem}
+\begin{proof}[Robertson + Seymour, GM 1]
+	Suppose $\mathcal{G}$ excludes a non-planar $H$. Then the family of $n \times n$ grids is $H$-minor free with unbounded treewidth.
+	Suppose $H$ is planar of $k$ verses. Then $H$ is a minor of the $P_{2k} \square P_{2k}$ grid. Then $G$ is $P_{2k} \square P_{2k}$-minor-free. Therefore, $\tw(G) \leq f(2k)$ by the grid minor theorem. 
+\end{proof}
+
+The grid minor theorem states that treewidth measures how close a graph is to being a tree and how far away a graph is from being a large grid. 
+\subsection{Alternative characterisations of treewidth and path-width}
+We can show the following:
+For all $G$, the $\pw(G) = \min k$ such that $G$ is a spanning subgraph of an interval graph with no $K_{k + 2}$, so the intervals cross at most $K + 1$ times. 
+
+We can show a similar result for treewidth as well:
+For all $G$, $\tw(G) = \min k$ such that $G$ is a spanning subgraph of a \textit{chordal graph} with no $K_{k + 2}$ subgraph. A chordal graph is a graph with no induced cycle with more than 4 vertices. This is equivalent to saying that $G$ has $\tw \leq k$ if and only if $G$ is a spanning subgraph of the intersection graph of a tree $T$ with max clique size $k + 1$. 
+$G$ is chordal if all minimal separators are a clique. 
+
+
+\section{Proof of Path-Width theorem}
+\begin{theorem}
+	\label{thm:Path-Width theorem }
+	For every forest $F$, if a graph $G$ is $F$-minor-free, then $\pw(G) \leq |F| - 2$.
+\end{theorem}
+The contrapositive is:
+\begin{theorem}
+	\label{thm:pw-tree contrapositive }
+	If a graph $G$ has path-width at least $w$, and $F$ is a forest where $|F| \leq w + 2$, then $G$ contains $F$ as a minor. 
+\end{theorem}
+Note that a complete graph on $|F|-1$ vertices has pathwidth $|F| - 2$. 
+We say that a separation is a pair $(A, B)$ of $V(G)$ where $A \cup B = V(G)$, there are no edges between $A - B$ and $B - A$, and the order of the separation is $|A \cap B |$. We can consider $A$ as being on the left of some separator, and $B$ on the right of some separator. We say that $(A, B) \leq (A', B')$ if:
+\begin{itemize}
+	\item $A \subseteq A'$
+	\item $B' \subseteq B$
+\end{itemize}
+So $(A', B')$ is to the "right" of $(A, B)$. For each $w \geq 0$, we say that $(A, B)$ is $w$-good, if we can decompose $A$ into a path of width at most $w$ and the last bag is $A \cap B$, the separator. 
+
+\subsection{Proof}
+\begin{lemma}
+	If $(A, B)$ and $(P, Q)$ are separations of $G$, $(A, B)$ is $w$-good, $(P, Q) \leq (A, B)$, and there are $|P \cap Q|$ vertex-disjoint paths of $G$ between $P$ and $B'$, then $(P, Q)$ is $w$-good. 
+\end{lemma}
+\begin{proof}
+	Let $R_1, ..., R_t$ be disjoint paths between $P$ and $B'$, where $t = | P \cap Q|$. Then we have that each path must pass through $P \cap Q$ as this is a separator, thus there are at least $t$ elements in the separator. Additionally, each path must belong inside $A$ as $A \cap B$ is also a separator. Therefore, $t \leq |A \cap B|$. 
+	Let $H = G[P] \cup \lbrace R_1, ..., R_t \rbrace$. As $H$ is in $A$, then there exists a path-decomposition of width at most $w$ where the last bag is precisely $A \cap B$, or the endpoints of $R_1, ..., R_t$. But contracting $R_1, ..., R_t$ to a single point yields a path-decomposition where the last bag is $P \cap Q$, as contracting $A \cap B$ along $R_1, ..., R_t$ yields $P \cap Q$. 
+\end{proof}
+
+We say that if $(A, B)$ and $(A', B')$ are separations of $G$, the second \textit{extends} the first if $(A, B) \leq (A', B')$ and the order of $(A', B')$ is at most the order of $(A, B)$. We say that a $w$-good separation of $G$ is maximal if no other $w$-good separation extends it. 
+
+Let $T$ be a tree, $(A, B)$ a separation. We say $(A, B)$ is $(w, T)$ spanning if:
+\begin{itemize}
+	\item $|A \cap B| = |T|$
+	\item There exists a model $\varphi$ of $T$ in $G[A]$ such that each block in the model contains a vertex in $A \cap B$
+	\item If $|T| \leq w + 1$ then $(A, B)$ is maximal $w$-good.
+\end{itemize}
+
+\begin{lemma}
+	Let $w \geq 0$ be an integer. Let $G$ be a graph with path-width at least $w$, and let $T$ be a tree, with $|T| \leq w + 2$. Then there exists a $(w, T)$ spanning separation of $G$. 
+\end{lemma}
+
+\begin{proof}
+	Fix $w$. Then if $|T| = 0$, let $A = \emptyset$, $B = V(G)$. Then $(A, B)$ is a $w$-good separation which is $(w, T)$-spanning.
+	
+	If $|T| = 1$, then let $v = V(T)$. Then we choose an arbitrary $v \in B$ such that $A = \lbrace v \rbrace$, $B = V(G)$, and extend by maximality. 
+	If $2 \leq |T| \leq w + 1$, then let $v$ be a leaf of $T$. we have that there is a  $(w, T - v)$-spanning separation $(A, B)$ of $G$ which is maximal $w$-good. Then let $u$ be the neighbour of $v$ in $T$ and let $u'$ be the intersection of the block of $u$ in $G$ and $B$. Then $u'$ has a vertex $v'$ in $B - A$, otherwise $(A, B - \lbrace u' \rbrace)$ is $w$-good and extends $(A, B)$, contradicting the maximality of $(A, B)$. 
+	
+	We assume that $(A \cup \lbrace v' \rbrace, B)$ is $w$-good. Therefore, there exists a maximal $w$-good separation $(A', B')$ that extends $(A \cup \lbrace v' \rbrace, B)$. Then $(A', B')$ has order exactly $|T|$ as it did not extend $(A, B)$. Now we wish to show that $(A', B')$ is $(w, T)$-spanning.
+	\paragraph{Contradiction argument}
+	Suppose not. Then there exists less than $|T|$ paths between $A \cup \lbrace v' \rbrace$ and $B'$. By Menger's theorem, then that implies that there exists a separator between $A \cup \lbrace v' \rbrace$ and $B'$ of order $< T$. Call this separator $(P, Q)$ with minimum order.
+	
+	We have that $(A \cup \lbrace v' \rbrace, B) \leq (P, Q) \leq (A', B')$. By Menger's theorem, there exists $|P \cap Q|$ vertex-disjoint paths from $P$ to $B'$. Therefore, $(P, Q)$ is $w$-good, by the above lemma. But $(P, Q)$ must extend $(A, B)$, since $|P \cap Q| \leq |A \cap B|$, and $(P, Q) \neq (A, B)$. However, this contradicts the maximality of $(A, B)$.
+	Therefore, there are $|T|$ disjoint paths between $A \cup \lbrace v \rbrace$ and $B'$. Therefore, $(A', B')$ is $(w, T)$-spanning.
+	
+	\paragraph{Conclusion}
+	Therefore, there is a $(w, T)$-spanning path separator $(A, B)$ where $|T| = w + 2$. Therefore, we have that $G[A]$ contains a model of $T$, therefore $G$ contains a model of $T$. Thus shown. 
+\end{proof}
+
+\section{Chordal partitions}
+Let $G$, $H$ be graphs. We let a $H$-partition of $G$ be defined as a function $f: V(G) \rightarrow V(H)$ such that for all edges $vw \in E(G)$, we have that either:
+\begin{itemize}
+	\item $f(v) = f(w)$, or
+	\item $f(v) f(w) \in E(H)$.
+\end{itemize}
+We also impose that $f^{-1}(x)$ is connected for all $x \in V(H)$. 
+
+We define the width of a $H$-partition is $width(f) := \max( |f^{-1} (x)| : x \in V(H))$. Therefore if the width is $k$, then we have that $G \subseteq H \boxtimes K_k$, or that $G$ is a subgraph of the $k$-regular inflation of $H$. 
+
+Recall that a chordal graph is one where every induced cycle is a triangle. Alternatively, we say that $H$ is chordal if it has a simplicial vertex $v$ such that $H - v$ is chordal, where a simplicial vertex is one where all its neighbours form a clique. Another definition is if and only if $\tw(H) = \omega(H) - 1 = \chi(H) - 1 = had(H) - 1$. 
+
+
+\begin{theorem}
+	If $G$ has no $K_t$-minor, $f$ is a chordal $H$-partition of $G$, then $H$ is a minor of $G$ and $H$ has no $K_t$-minor.
+\end{theorem}
+
+This would imply that $\tw(H) + 1 = had(H) \leq t - 1$. 
+
+We shall prove the stronger result below. 
+\begin{theorem}
+	Every $K_t$-minor-free graph $G$ has a chordal $H$-partition such that each part of the partition has:
+	\begin{itemize}
+		\item $\Delta \leq 3t - 10$
+		\item $\pw \leq 2t - 7$
+		\item $bw \leq 2t - 7$
+	\end{itemize}
+\end{theorem}
+
+
+\begin{proof}
+	We say a subgraph $X \subset G$ is "processed" if $X$ has the properties listed above.
+	
+	Take a chordal $H$-partition of $G$ such that:
+	\begin{enumerate}
+		\item each unprocessed part is simplicial in $H$
+		\item the number of vertices of $G$ in a processed part is maximal. 
+	\end{enumerate}
+	Let $A$ be an unprocessed part on a simplicial vertex of $H$. Then we have that the neighbours of $A$ in $H$ can be written as $X_1, ..., X_k$ where $k \leq t - 2$. Then we look at the vertex $r$ in $A$ with a neighbour in $X_1$ and label paths $P_1 ... P_{k - 1}$ where $P_{i + 1}$ is the shortest path from $r$ to a vertex $v_i$ where $v_i$ has a neighbour in $X_i$. Then we have that this is a depth-first subtree, therefore we partition the graph into level sets $L_1, ..., L_m$ where $L_i$ are all the vertices on $P_1, ..., P_{k - 1}$ of distance exactly $i$ from $r$. Then we let the new processed part, $A'$, be the union of all $P_1, ..., P_{k - 1}$. Then we have that $A'$ has the property that every vertex has $\Delta$ at most $3t - 10$ from the fact that edges can only go between level sets $i$, $i-1$ and $i + 1$ and there are at most $k-1$ level sets. We also have that the path-decomposition is the concatenations of levels $i$ and $i + 1$ meaning that each bag is at most $2t - 7$ vertices. Finally, the maximum distance between any two sets is $2t - 7$, thus $bw \leq 2t - 7$.
+\end{proof}
+
+\subsection{Hadwiger's conjecture and simple partial result}
+
+\begin{theorem}
+	For all graphs $G$ which are $K_t$-minor free, there exists a $H \subseteq G$ such that $|V(H)| \geq \frac{1}{2}|V(G)|$ and $\chi(H) \leq t - 1$.
+\end{theorem}
+We will use a simpler lemma.
+
+\begin{lemma}
+	For all connected graphs $X$, there exists an independent set $I$ and a dominating set $D$ such that $|D| = 2 |I| - 1$ for $I \subset D$. 
+\end{lemma}
+\begin{proof}
+	Take $I$ and $D$ to be maximal such that $|D| = 2|I| - 1$ and $I$ independent, $I \subseteq D$. We have that for any single vertex $v$, $\left\lbrace v \right\rbrace = I = D$, satisfying the equation.
+	
+	Now suppose $D$ does not dominate $X$. We find a vertex not dominated by $D$ and find a vertex $x$ on the shortest path such that $x$ is of distance 2 from $D$. Now we take $y$, the neighbour of $D$. We add $y$ to $D$ and $x$ to $I$, which satisfies the induction hypothesis.
+\end{proof}
+
+Now to prove the theorem above.
+
+\begin{proof}
+	Let $G$ be a connected $K_t$-minor free graph and let $I_0$ and $D_0$ be the dominating set and independent set as described above. Now let $G_1 = G - D_0$ and repeat on the connected components of $G_1$ for the sets $G_1, ..., G_k$, and then repeat on the connected components and so on. After exhausting all connected components, we have that $(I, D)$ forms a tree-like structure, and in fact the sets form a closed tree. We have that the depth of this tree is at most $t - 1$ as each path from a leaf to the root is a clique. Therefore, we have that the closed tree is chordal when we contract each $D$, and in fact we can contract each $D$ to the corresponding $I$ to yield a minor $H$ such that $V(H) = \cup I \geq \frac{1}{2} |V(G)|$ and we colour (by colour we mean colouring each vertex in $I$ the same colour) each level set of $I$ the same colour, to yield that $H$ requires at most $t-1$ colours. 
+\end{proof}
+
+\section{Brambles and treewidth}
+We define a bramble $B$ to be a set $B_i \subseteq V(G)$ such that for all $B_i, B_j$, we have that either $B_i \cap B_j \neq \emptyset$ or there exists an edge between $B_i$ and $B_j$ and $G[B_i]$ is connected for all $i$. We define the hitting set of a bramble $B$ to be the the set of vertices $X \subset V$ such that $X \cap B_i \neq \emptyset$ for all $i$. We define the order of a bramble $B$ to be the smallest $|X|$ where $X$ is a hitting set. Then we define $\bn(G)$ to be the maximum order over every bramble. 
+
+For $n \times n$ grids, we take a cross to be the union of a column and a row. Then we have that the set of all crosses forms a bramble, and the hitting set is of size at least $n$, as we must intersect all rows and columns. Therefore, we have that $\bn(n\times n \text{ grid}) \geq n$. 
+
+\begin{theorem}[Seymour and Thomas]
+	\begin{equation}
+		\bn(G) = \tw(G) + 1.
+	\end{equation}
+\end{theorem}
+
+\begin{proof}[$\bn(G) \leq \tw(G) + 1$]
+	We use the same trick that we did previously. We take a tree-decomposition of $G$ $(X_i)_i$ and we use the fact that the intersection set between two neighbouring bags is a separator of $G$. So we have that $X_v \cap X_w$ is a separator for $G$. Let $T_{v:w}$ be the subtree on the end of $X_v$ not including elements in $X_w$. Then we cannot have a bramble with one set in $T_{v:w}$ and $T_{w:v}$, as that would mean that the bags would not touch as they do not include vertices in the separator. Therefore, we have that all brambles either have a vertex in $X_v \cap X_w$, or they all live in either $T_{v: w}$ or $T_{w: v}$. Now orient the edge $vw$ to point towards the side which contains brambles in $T_{v:w}$ or $T_{w:v}$. Then we have a bag $B_x$ such that all arrows point towards $B_x$. Then $B_x$ is a hitting set. Therefore for any bramble, the hitting set is at most $\tw(G) + 1$, therefore we have that $\bn(G) \leq \tw(G) + 1$. 
+\end{proof}
+To prove the reverse direction, we wish to construct a bramble such that the smallest hitting set is at least $\tw(G) + 1$. As we are taking this over maximal hitting sets, then proving an upper bound. Proof by Mazoit.  
+\begin{theorem}
+	If $G$ has $\tw(G) = k + 1$, then $G$ has a bramble of size $k$. Thus, $\bn(G) \geq \tw(G) + 1$. 
+\end{theorem}
+
+To prove this statement, let us define some terms. Let $G$ be a graph. Fix $k$ as an integer and $(B, \tree)$ be a tree-decomposition of $G$. We say a bag $B_x$ is \textit{small} if $|B_x| \leq k$ and \textit{big} if $|B_x| \geq k + 1$. Suppose $B_x$ is a big leaf bag with neighbour $B_y$. Then define $B_x - B_y$ as a $k$-flap of $\tree$. We say a tree-decomposition is $k$-partial if every non-leaf bag is small, and $\geq 1$ bag is small. 
+
+We shall use a technical lemma to build new tree-decompositions in a ``correct'' way.
+
+\begin{lemma}
+	Let $G$ be a graph, $k$ integer and fixed. Then suppose we have a $k$-partite tree-decomposition $\tree_X$ of $G$ and a $k$-partite $\tree_Y$ of $G$. Let $X$ be a $k$-flap of $\tree_X$ and $Y$ be a $k$-flap of $\tree_Y$. Then there is a tree-decomposition $\tree$ such that for all $k$-flaps $Z$ in $\tree$, we have that there is a $k$-flap $Z'$ in $\tree_X$ or $\tree_Y$ such that $Z' \neq X$ and $Z' \neq Y$ and $Z \in Z'$.  
+\end{lemma}
+
+We shall put off the proof of lemma until later. For now, we shall assume the lemma as given and prove the theorem. 
+
+\begin{proof}
+	Set $k = \tw(G)$.
+	Let $\beta_0$ be the set of all $k$-flaps over all $k$-partial tree-decompositions of $G$. We say a set $\beta$ is \textit{upwards-closed} with respect to $k$-flaps if $C \in \beta$, $D$ is a $k$-flap, and $C \subseteq D$, then $D$ is a $k$-flap. Obviously, $\beta_0$ is minor closed. 
+	
+	Then let $\beta$ be a set of $k$-flaps in $G$ such that:
+	\begin{enumerate}
+		\item $\beta$ contains $\geq 1$ $k$-flap from every $k$-partite tree-decomposition of $G$
+		\item For all $X \in \beta$, $\beta - \langle X \rangle$ violates the condition above. This is referred to as inclusion-wise minimal.
+	\end{enumerate}
+	We have that $\beta$ is nonempty as we remove elements from $\beta_0$ until the conditions above hold. 
+	
+	\begin{lemma}
+		For all $X, Y \in \beta$, $X$ and $Y$ touch.
+	\end{lemma}
+	\begin{proof}
+	Suppose not. Then we take a minimal $X, Y$ contained in the original such that $\beta - X$ and $\beta - Y$ does not violate (2). Then $\beta - X$ and $\beta - Y$ fails (1), so there exists $\tree_X$ and $\tree_Y$ such that the only $k$-flap in $\beta$ is $X$ and $Y$ respectively. Then we use the lemma above to create a tree-decomposition $\tree$. $\tree$ is $k$-partial, meaning that none of its internal nodes have at least $k$ elements. But this implies from treewidth that $\tree$ has a leaf node with at least $k + 1$ elements, which is big. But none of these leaf nodes are in $\beta$. They cannot be a subset of another $k$-flap, because there are no others apart from $X$ and $Y$. But they cannot be a subset of $X$ or $Y$ as $X$ and $Y$ are minimal in $\beta$. Thus shown.
+	\end{proof}
+	Now let us take $\beta'$ to be the set of connected subsets in $\beta$. Now $\beta'$ is a bramble. Let $S$ be a hitting set in $\beta'$, and suppose $|S| \leq k$. Then we think about the connected components of $G - S$, call them $C_1 ... C_p$. For each $i$, define $N_i = C_i \cup N(C_i)$. Then $N_1 ... N_p \cup C$ is a tree-decomposition, with $C$ as a star. But this is a $k$-partial decomposition, as $C$ is small. Furthermore, as $\tw(G) \geq k + 1$, then there is an $N_i$ which is big. But this implies that $C_i$ is a connected $k$-flap. Therefore, $C_i \in \beta'$. But $C_i$ is not hit by $S$, thus $S$ is not a hitting set.
+	
+	Therefore, all hitting sets of this bramble are of size $\geq k + 1$, thus $\bn(G) = \tw(G) + 1$. 
+\end{proof}
+
+Now to prove the technical lemma.
+
+\begin{proof}
+	Suppose $G$ is a graph. Let $k$ be a fixed integer. Then define $\tree_X$ and $\tree_Y$ as above, define $X$ and $Y$ as above.
+	
+	As $X$ and $Y$ are not touching, suppose we have a minimal separator $Z$. Let $U_X$, the bag containing $X$, neighbour $U_q$. Then $U_q$ is a separator of $X$ from the rest of $G$, therefore $U_q$ is also a separator of $X$ from $Y$. As $|U_q| \leq k$ as $U_q$ is either an internal node or a leaf of $K_t$, then $X$ has a separator of size at most $k$. 
+	
+	Let $S$ be a minimal separator of $A$ and $B$. By Menger's theorem, there exists $|S|$ disjoint paths from $A$ to $S$. Let $A = S \cup$ all connected components that lie on the path from $S$ to $X$ and let $B$ be $G - A + S$. 
+	
+	We claim that there exists a $k$-partial tree-decomposition $\tree_B$ of $G[B]$ with $S$ a leaf bag and for all $k$-flaps $Z$ of $\tree_B$, there exists a $k$-flap $Z'$ in $\tree_A$ such that $Z \subseteq Z'$ and $Z' \neq X$. 
+	
+	For all $s \in S$, let $w_s$ be a node of the tree of $\tree_X$ such that $s$ is in the bag $U_{w_s}$. 
+	For all $v$ in the tree of $\tree_X$, let $D_v' = (D_v \cap B) \cup \lbrace s \in S : v \text{ is in the } w_s \text{x-path in the tree-decomposition } \tree_X \rbrace$. 
+	
+	Then $|D_v'| \leq |D_v|$ as when we add elements back to $D_v'$ we removed them already from $B$, so the size does not increase.
+	Furthermore, we have that $S$ is its own bag and since it is a subset of $U_q$ then it is a leaf of $\tree_A$. Furthermore, $S$ is also small.
+	
+	We then do the same procedure with the set $B$. We then have $\tree_B$ as the tree, with $S$ being a small bag. Then we attach $\tree_A$ and $\tree_B$ by taking the disjoint union and adding an edge between both bags containing $S$. This is a tree-decomposition which satisfies the above properties. 
+\end{proof}
+
+\section{A bird-eye's view}
+Consider the world of graph families that are not minor-closed. This is a much stranger world than the ones that we deal with, though we do understand it rather well.
+
+The most interesting graph families are graphs where the number of edges is sparse in some way. We will define the notion of sparsity further. 
+
+\subsection{1-planar graphs} 
+Consider the family of $1$-planar graphs $\mathcal{F}$. $G$ is $1$-planar if there exists an embedding such that each edge of $G$ has at most one crossing. 
+\begin{lemma}
+	$\mathcal{F}$ is not minor closed.
+\end{lemma}
+$\mathcal{F}$ contains graphs $K'_t$ such that $K_t$ is a minor of $K'_t$. Consider $K_t$ drawn on the plane with straight edges. For each edge, subdivide it such that the edge crosses over once. Then $K_t$ is a minor of this graph as we can unsubdivide.
+
+Note that every $1$-planar graph is almost planar! We can construct every 1-planar graph from a 2-connected planar graph (with faces of size 3 or 4) and adding 2 crossing edges to each face of size 4.
+\subsection{Shallow minors}
+We say that $H$ is an $r$-shallow minor if $H$ is isomorphic to a graph obtained from $G$ by contracting disjoint subgraphs of radius $\leq r$, deleting vertices or edges. Another wy to state this is that $H$ is a model of $G$ where each preimage of the model has radius $\leq r$. 
+
+We say $\nabla_r(G) :=$ the maximum average degree of an $r$-shallow minor of $G$. 
+We define $\nabla(G)$ to be the maximum average degree of any minor of $G$. 
+
+\begin{theorem}
+	Let $\mathcal{G}$ be a class such that there exists a $c$ such that for all $G \in \mathcal{G}$, for all $r \in \mathbb{N}$, $\nabla_r(G) \leq c$. Then $\mathcal{G}$ is contained in a proper minor-closed class. 
+\end{theorem}
+This is because there exists a $t = c + 2$ such that for all $g \in \mathcal{G}$, $G$ is $K_t$-minor free. 
+Then $\nabla_r(G) \leq c$, as $\nabla(G) \leq c$. 
+Thus $\mathcal{G}$ is inside a proper minor-closed class. 
+
+\subsection{Linear expansion}
+We say a graph family $\mathcal{F}$ has linear expansion if $\nabla_r(G) \leq cr$ for all $G \in \mathcal{F}$ and for all $r$. 
+
+Alternatively, $\nabla_r(G) = O(r)$. 
+This set of families include all those contained in proper minor-closed classes, from the lemma above. 
+
+We claim that 1-planar graphs have $\nabla_r(G) \leq cr$. 
+
+\subsection{Proof of linear expansion of 1-planar graphs}
+
+We will use a small lemma to prove this statement. Recall that the ltw of $G$ is the minimum $k$ such that there exists a layering $(L_1, ..., L_k)$ and a tree-decomposition $(B_x)_{x \in V(T)}$ such that for all $i, 1 \leq i \leq k$ and $j \in V(T)$, $|L_i \cap B_x | \leq k$. 
+
+\begin{lemma}
+	If $H$ is an r-shallow minor of $G$, then $\ltw(H) \leq 2 r \ltw(G)$. 
+\end{lemma}
+
+Let $H$ be a $r$-shallow minor of $G$. Let $(B_x)_x$ be a tree-decomposition of $G$. Then contracting every $r$-radius subgraph in $G$ to form $H$ means replacing all of the vertices in the $r$-radius subgraph in $(B_x)_x$ with a new vertex. Furthermore, let $a$ and $b$ be two distinct subgraphs in $G$ which are contracted to form $H$. Then if $a$ and $b$ are adjacent in $H$, then the distance between the centre of $a$ and the centre of $b$ is at most $2r + 1$. Therefore if we look at the layering $(L_1, ..., L_k)$ of $G$, then combining $(L_1, ..., L_{2r})$, $(L_{2r + 1}, ... , L_{4r})$ and so on will be a layering of $H$. Then we have that $\ltw(H) \leq 2r \ltw(G)$ as the size of each bag remains the same but the size of each layer grows by at most $2r$. 
+
+\begin{lemma}
+	For all graphs $G$, the minimum degree $\delta(G)$ is at most $3 \ltw(G)$.
+\end{lemma}
+Let $G$ be a graph with layering $(L_k)_k$ and book-embedding $(B_x)_x$ such that the intersections is at most $\ltw(G)$. Then let $B_s$ be a leaf-bag. If $B_s$ is a subset of its neighbouring bag, then combine $B_s$ and repeat. Then there exists a leaf bag $B_s$ such that $B_s$ contains a vertex $q$ not in the neighbouring bag. But $q$ lives in a layer $L_i$, and all of its neighbours must be in $B_s$. But this means that $q$ must only have neighbours that are in $B_s$ and in either $L_i$, $L_{i - 1}$ or $L_{i + 1}$. But this means that $q$ has at most $3 \ltw(G)$ neighbours. Thus shown.
+
+By removing $q$ and repeating this operation, we can iterate through the entire graph. Therefore, the number of edges is at most $3n \ltw(G)$. But this implies that $2m/n = 6 \ltw(G)$, so the average degree is $ \leq 6 \ltw(G)$. 
+
+\begin{corollary}
+	For all $G$, $\nabla_r(G) \leq 12 r \ltw(G)$.
+\end{corollary}
+Let $H$ be an $r$-shallow minor of $G$. We have that the average degree of $H$ is $\leq 6 \ltw(H)$, and $\ltw(H)$ is $\leq 2r \ltw(G)$. Therefore, $\nabla_r(G) \leq 12r \ltw(G)$.
+
+Recall that if $G$ is planar, then $\ltw(G) \leq 3$. We claim that if $G$ is $1$-planar, then $\ltw(G)$ is at most 24.
+
+\begin{proof}
+	Place a vertex at every crossing of $G$ where $G$ crosses once to form the planar graph $G'$. Then $G'$ has layering $(L_i)_i$ and book-embedding $(B_x)_x$ with $\ltw(G) \leq 3$. Then we replace each crossing vertex with the four vertices on either endpoints of $G$ in the book-embedding and merge every two layer in the layering. Then $\ltw(G) \leq 3 \times 4 \times 2 = 24$ so $\nabla_r(G) \leq 288 r$. 
+\end{proof}
+As a corollary,
+	For $k$-planar graphs, where each edge is allowed to cross at most $k$ times, we have that $\nabla_r(G) \leq 144 (k + 1) r$. 
+	
+Therefore, the class of $1$-planar graphs has linear expansion.
+\subsection{Bounded expansion}
+We say a class $\mathcal{G}$ has bounded expansion if there exists a factor $f$ such that for all $r$ and for all $G$ in $\mathcal{G}$ $\nabla_r(G) \leq f(r)$. 
+\subsubsection{1-subdivisions of complete graphs}
+$1$-subdivisions of $K_n$ have $n(n-1)$ edges and $n + \frac{n(n - 1)}{2}$ vertices. The average degree is at most $4$ but is a $1$-shallow minor of $K_n$. So $\nabla_1(K_n') \geq n + 1$. 
+
+If $G$ is a graph of max degree $3$, then $\nabla_r(G) \leq 2^{r + 2}$. 
+
+Graphs of bounded maximum degree have bounded expansion of roughly $(\Delta - 1)^{r + 2}$. But these graphs are exponential expansion, and there exist graphs with exponential expansion in $r$. 
+
+\subsection{Polynomial expansion}
+We say that $\mathcal{G}$ has degree $d$ polynomial expansion if there exists a $c$ such that for all $r $ and for all $G \in \mathcal{G}$ if $\nabla_r(G) \leq cr^d$. 
+
+This encompasses $k$-planar graphs, but also quadratic expansions, and so on.
+
+Why is polynomial expansion interesting?
+
+\begin{theorem}
+	Let $G$ is a graph. Then it holds that for all $r$ we have that $\nabla_r(G) \leq c r^d$ if and only if every $n$-vertex subgraph of $G$ has a balanced separator of order $\leq c' n^{1 - \varepsilon}$ where $\varepsilon = \varepsilon(d) > 0$ and is roughly $1/d$. Therefore, $\tw(G) \leq O(n^{1- \varepsilon})$ and we say that $\tw(G)$ has a strongly sublinear separator. 
+\end{theorem}
+Proven in the forwards direction by Plotkin, Rao and Smith.
+Proven in the opposite direction by Dvorak and Norin. 
+
+\section{A brief introduction into graph product structure theory}
+
+In the GMST, we have the result that every $K_t$-minor free graph can be constructed out of building blocks:
+\begin{itemize}
+	\item graphs of bounded genus
+	\item clique-sums
+	\item vortices
+	\item apex vertices
+\end{itemize}
+However, this tells us nothing about the structure of graphs of bounded genus, or even planar graphs. Graph product structure theory tells us a way to build graph families which are more complex than $K_t$-minor free graphs. 
+
+The product that we are dealing with is the strong product. Let $A$ and $B$ be graphs. Then $A \boxtimes B$ where $\boxtimes$ is the strong product is defined as:
+$V(A \boxtimes B) = V(A) \times V(B)$
+and $(u,v)(a,b)$ is an edge in $A \boxtimes B$ if and only if $u = a$ and $ v$ is adjacent to $b$ in $B$, or if $b = v$ and $u $ is adjacent to $v$, or if $u$ and $v$ are adjacent to $a$ and $b$ respectively. 
+
+In fact, $\boxtimes$ is the largest product that maintains projection, meaning that projecting an edge $e$ from $E(A \boxtimes B)$ to $A$ will send $e$ to $E(A)$ or $V(A)$, likewise for $B$. 
+
+We say a graph $G$ is contained in a graph $H$ is $G$ is isomorphic to a subgraph of $H$.
+
+As a reformulation of the tree-partition-width, we have that $\tpw(G)$ is exactly the inflation of a tree $T$. If $\tpw(G) \leq k$, then $G$ is contained in $T \boxtimes K_{k}$. Therefore from Distel + Wood, for all graphs $G$ of $\tw(G) \leq k$ and $\Delta(G) \leq \Delta$, $G$ contained in $T \boxtimes K_{18 k \Delta}$. In fact, we showed that $\delta(T) \leq 6 \Delta$ and $|V(T)|  \leq \max \left\{|V(G)|/2k , 1\right\}$.
+
+\subsection{Planar graphs}
+One paper which revitalised the interest of GPST is the paper by Vida Dujmović, Gwenaël Joret,Piotr Micek, Pat Morin,Torsten Ueckerdt and David R. Wood, which states that
+\begin{theorem}
+	Every planar graph $G$ is contained in:
+	\begin{enumerate}
+		\item $H \boxtimes P$ where $\tw(H) \leq 8$and $P$ is a path,
+		\item $H \boxtimes P \boxtimes K_3$, $\tw(H) \leq 3$. 
+	\end{enumerate}
+\end{theorem}
+
+We can think of the first statement as a layering of $H$ according to $P$, and we can think of the second statement as a 3d layering with triangles.
+
+Followup by Ueckerdt, Wood and Yi proved that $\tw(H) \leq 6$. This comes from improvements at the start and end of the induction steps. 
+
+This finding was motivated by finding a bound on the queue-number of planar graphs. We know from Yannakakis that the pagenumber of planar graphs is at most 4, but Heath, Leighton and Rosenberg conjectured that the queue-number of planar graphs is bounded. In fact, we have that the queuenumber of $H \boxtimes P \boxtimes K_\ell$ where $H$ has tw at most $k$ is at most 
+\begin{equation}
+	3 \ell (2^k - 1) + 3/2 \ell.
+\end{equation}
+For $\ell = 3$ and $\tw(H)  = 2$, then this gives the upper bound of 49.
+
+
+Full proof was given by Nikolai.
+\subsection{Graphs of Euler genus $g$}
+We can extend this to graphs on arbitrary surfaces. For all graphs $G$, we have that:
+\begin{enumerate}
+	\item $G \subseteq H \boxtimes P$ where $\tw(H) \leq 2g + 6$
+	\item $G \subseteq H \boxtimes P \boxtimes K_{\max\{2g, 3\} }$ where $\tw(H) \leq 3$. 
+\end{enumerate}
+Therefore, $qn(G) \leq O(g)$. 
+
+\subsection{Other graph families}
+Define the row-treewidth of a graph $G$ to be $rtw(G) := $ min $k$ such that $G \subseteq H \boxtimes P$ and $\tw(H) \leq k$. We have examples of families of graphs with bounded rtw.
+What about families of graphs with high $rtw$?
+Let $A_n$ to be the $n \times n$ grid with an apex vertex. We have that $A_n$ is $K_6$-minor free. Now suppose $A_n \subseteq H \boxtimes P$. But consider a layering of $A_n$. Consider where the apex vertex $a$ sits in the layering- all its neighbours (which is $A_n$ itself) must be sitting on either layer $i$, $i-1$ or $i+1$, where layer $i$ is the layer which $a$ sits in. But this implies that $\tw(H) \geq n^2/3$. meaning that if $A_n$ is a minor of $\mathcal{G}$ for all $n$, then $\mathcal{G}$ has unbounded rtw. In fact, the converse holds. 
+\begin{theorem}
+	For all minor-closed classes $\mathcal{G}$, $\mathcal{G}$ has bounded rtw if and only if some apex graph $A$ is not in $\mathcal{G}$.
+\end{theorem}
+Recall that a graph $A$ is apex if there exists a vertex $a$ such that $A - a$ is planar.
+
+As a corollary, Euler genus $g$ graphs have no $K_{3, 2g + 3}$ which is apex. 
+
+
+Proof uses Graph Minor Structure Theorem and is based on a strengthening by Dvorak and Thomas.
+
+\begin{theorem}
+	For all apex-minor-free graphs $G$, we can construct them with
+	\begin{enumerate}
+		\item Surfaces
+		\item Vortices
+		\item Weak apex vertices
+		\item Clique-sums
+	\end{enumerate}
+\end{theorem}
+Weak apex vertices are vertices that are adjacent to vortices and themselves. Strong apex vertices are apex vertices which are not weak.
+
+Finally, if $X$ is $k$-apex (with $k$ apex vertices)
+Then $G$ is $X$-minor-free if and only if $G$ can be constructed out of 
+\begin{itemize}
+	\item surfaces
+	\item vortices
+	\item weak apex vertices
+	\item $\leq k - 1$ strong apex vertices
+	\item Clique-sums
+\end{itemize}
+
+As an addendum which are $X$-minor free are $k + 4$-colourable with clustering $\leq f(X)$.
+Dujmovic + Wood, 2021
+\subsection{Past minor-closed families}
+We have that $H \boxtimes P$ deals with minor-closed classes. But what about non-minor-closed classes?
+
+Consider $k$-planar graphs.
+We define a $(k, d)$-shortcut system $\mathcal{P}$ on $G_0$ to be a set of paths in $G_0$ such that the length of each path is $\leq k$ and each vertex is internal to $\leq d$ paths of $\mathcal{P}$. 
+
+Then the shortcut system $G_0^\mathcal{P}$ is the graph where $V(G_0^\mathcal{P}) = V(G_0)$ and $vw \in E(G_0^\mathcal{P})$ if and only if there is a $vw$ path in $P$. We claim that for all $k$-planar graphs $G$, there is a planar graph $G_0$ and $G = G_0^\mathcal{P}$ for some $(k + 2, 2)$-shortcut system. 
+
+Place a dummy vertex on each intersection of $G$, call the graph $G_0$. Then for every edge $vw$, add the path $v x_1, x_2, ..., x_k w$ to $\mathcal{P}$. Then $G \subseteq G_0^{\mathcal{P}}$. 
+
+\begin{lemma}
+	Dujmovic, Morin, Wood
+	For all $G_0 \subseteq H \boxtimes P$, $\tw(H) \leq k$, for all $(k, d)$ shortcut systems $\mathcal{P}$ of $G_0$, if $G = G_0^\mathcal{P}$, then $G \subseteq H' \boxtimes P'$, where $\tw(H) \leq f(t, d, tw(H))$. 
+\end{lemma}
+Therefore, $k$-planar graphs also have the product structure.
+
+\begin{lemma}
+	Hickingbotham, Wood
+	If $G_0 \subseteq H \boxtimes P$, and $G$ is an $r$-shallow minor of $G_0 \boxtimes K_L$, then $G \subseteq H' \boxtimes P$ where $\tw(H) \leq f(\tw(H), r, c)$. 
+\end{lemma}
+As an example, if $G$ is $k$-planar, then $G$ is a $\approx k/2$-shallow minor of $G_0 \boxtimes K_2$ where $G_0$ is planar. 
+
+\section{Erdos-Posa property}
+\begin{theorem}[Erdos-Posa]
+	Every graph $G$ has either $k$ disjoint cycles or a vertex set $S \subseteq V(G)$ where $|S| \leq c k \log k$ where $G - S$ has no cycles. 
+\end{theorem}
+
+We prove some small lemmas that build to the Erdos-Posa theorem.
+\begin{lemma}
+	Every graph $G$ with $\delta(G) \geq 3k$ has $k$ cycles.
+\end{lemma}
+\begin{proof}
+	We shall prove this by induction. For $k = 1$, this is trivial. Now suppose $k \geq 2$. Let $C$ be the smallest cycle in $G$. Then every vertex has at most three neighbours on $C$. If $v$ has four neighbours on $C$, then there exists a smaller cycle that goes through $v$. Then $G - C$ has smallest degree $\geq 3(k - 1)$. By induction, $G - C$ has $k - 1$ cycles. Add $C$ back on for the $k$-th cycle. 
+\end{proof}
+
+\begin{lemma}
+	Every graph of minimum degree at least $q$ and girth at least $c \log q$ contains $K_q$ as a minor. 
+\end{lemma}
+
+Now is the proof of the Erdos-Posa theorem.
+\begin{proof}
+	We will do induction on $k + |V(G)|$. Suppose $G$ has a cycle $C$ of length $\leq c \log k$. Then by induction, $G - C$ will either have $k - 1$ disjoint cycles or a vertex set $S$ of size at most $c (k - 1) \log (k-1) \leq c k \log k -  c \log k$ such that $G - C$ has no cycles. In the first case, add $C$ as a cycle for $k$ total cycles, or let $S' = C \cup S$ to have a set of size at most $c k \log k$ where $G - S$ has no cycles.
+
+	Then suppose there is a vertex $v$ of degree $2$ in $G$, and $G$ has girth $\geq 4$. Then let $x$ and $y$ be the edges of $v$ and contract $v$ to $y$. Then if $G \setminus vy$ has $k$ cycles, then any cycle including $x$ and $y$ can be uncontracted to include $v$. Any cycle missing either $x$ or $y$ are untouched by the contraction operation. Therefore, $G$ has $k$ cycles. Otherwise, suppose $G \setminus vy$ has $c k \log k$ sized feedback set $S$. Then this hitting set is the same in $G$. Any cycle that goes through $v$ must go through $x$ and $y$. 
+
+	Finally, let $r = \geq \lfloor c/8 \log k \rfloor$ and $G$ has girth $\geq 8r$ and min degree of $G \geq 3$. Then let $X$ be a maximal set of vertices in $G$ at distance $\geq 2r + 1$. Let $B_x = \{v : d(v, x) \leq r\}$. These are disjoint balls by definition. Let $B'_x$ be connected subgraphs obtained by greedily adding vertices to $B_x$ of distance $\leq 2r$. There exists a cover with sets of radius Then there are $\geq 3 2^r$ edges with exact 1 endpoint in $B'_x$ and one endpoint in $B_x$. Furthermore, $B'_x$ and $B'_y$ only have a single edge between, otherwise the girth is less than $8r$. Therefore, at most 1 edge joins $B'_x$ to $B'_y$. Contract $B'_x$ to a vertex $G'$. No edges are lost when contracting balls to vertices, and $G'$ has big degree- $\delta(G')\geq 3 \times 2^{r - 1}$. By the above lemma, $\delta(G)$ has $2^{r - 1}$ disjoint cycles which is roughly $k$ disjoint cycles. 
+\end{proof}
+
+Recall that the Erdos-Posa theorem states that for any graph $G$, there exists $k$ disjoint cycles or there exists a vertex set $|S|$ where  $|S| \leq f(k) \in \Theta(k \log k)$ vertices in $G$ such that $G - S$ has no cycles.
+
+A graph $H$ has the\textit{ Erdos-Posa property }if for any graph $G$, there exists $k$ disjoint subgraphs of $G$ each containing a $H$-minor or there exists a vertex set $|S|$ where  $|S| \leq f_H(k)$ vertices in $G$ such that $G - S$ is $H$-minor-free.
+
+There is a paper by Raymond et al where $f_H(k) = C_H k \log k$ where $C_H$ is some constant. 
+
+\begin{theorem}
+	If $H$ is planar, then $H$ has the Erdos-Posa property.
+\end{theorem}
+\begin{proof}
+	Suppose $H$ is planar and connected. Then $K = 1$ is trivial for any graph $H$. Now suppose $K \geq 2$. Let $H' = H \sqcup \ldots \sqcup H$ $k$ times. $H'$ is planar. From GMT 3, For all planar graphs $H$, if $G$ has no $H$ minor, then $\tw(G) \leq C_H$ for some $H$. Now consider a tree-decomposition of $G$, $(B_x, x \in T)$. The size of each bag is $\leq C_{H'} + 1$. Consider all models of $H$ in $G$ and see what subtree each model spans. Let $\mathcal{F}$ be the family of subtrees whose subgraph contains a minor of $H$. As none of $k$ subtrees are disjoint, then every $k$ subtrees in $\mathcal{F}$ must intersect at some bag. By the Helly property, there exists a set $S$ of bags of size $k - 1$ bags such that every subtree in $T$ intersects with $S$. Then remove $S' = \cup_{x \in S} B_x$ from $G$. Then there is no minor of $H$ in this induced subgraph. 
+\end{proof}
+$|S'| \leq |S| (\tw(G) + 1) = |S|(c(H, k) + 1)$. But $C(H, k) = O(k^9 |V(H)|^9)$, so $|S'| = O(K^{10} |V(H)|^9)$. 
+
+\begin{theorem}
+	Let $\mathcal{F}$ be a family of subtrees trees on a tree $T$. Let $k$ be an integer $\geq 1$. Then if every $k$-subset of $\mathcal{F}$ are not disjoint, then there exists a vertex set $S \subseteq V(T), |S| \leq k - 1$ such that every tree in $\mathcal{F}$ intersects with $S$.
+\end{theorem}
+\begin{proof}
+	Use induction on $|\mathcal{F}| + k$. If $|V(T)| = 1$, then this is trivial. Let $v$ be a leaf in $T$. If $\{v\} \in \mathcal{F}$, then delete $v$ from $T$ and remove $v$ from all trees in $\mathcal{F}$. Then use the induction hypothesis. If $\{v\}$ is not a tree, then if two bags intersect on $v$, they must intersect on its neighbour $w$. Delete $v$ from $T$ and from $\mathcal{F}$.
+\end{proof}
+
+\begin{theorem}
+	Suppose $H$ is a nonplanar graph, and an integer $f_H(2) \geq 1$. Then there exists a graph $G$ where $G$ has no two disjoint copies of $H$ and there exists no set $C \subseteq V(G), |C| \leq f_H(2)$ such that $G - C$ has no $H$ minor. 
+\end{theorem}
+
+\begin{proof}
+	Suppose $H$ has oriented genus $g$. Then $H' = H \sqcup H$ has oriented genus $2g$.
+	Embed $H' H$ onto a $g$-torus. Each component is vertex disjoint but edges can cross. At most 2 edges are at each crossing. Let $G'$ be the embedding but with a vertex on each crossing of the embedding. Suppose $EP$ holds for $H$. Then for $G'$, $G'$ has a minor of $H'$ or has a set of bounded size of no $H$ minor. The genus of $H'$ is $2 g$ which is bigger than $g$. Therefore, $G'$ has no $H'$ minor. Suppose there exists a set $S$. Then $|S| \leq f_H(2)$. $S$ hits $2 |S|$ copies which is $< \ell$. Therefore, $G - S$ contains a $H$ minor.
+\end{proof}
+
+Why $k \log k$? There exists infinitely many integers $n$ such that there is an $n$-vertex graph with treewidth $\Theta(n)$ and girth $g = \Theta(\log n)$. These are Ramanujan graphs.
+
+Take $k = \lfloor n/g \rfloor + 1$. Then $k = \lfloor n/g \rfloor + 2$. $G$ has $\leq n/g < k - 1$ disjoint cycles. Therefore it fails property 1. Suppose $S \leq V(G)$ has no cycles. As $\Omega(g) \leq \tw(G) \leq |S| + 1$, then $|S| \in \Omega(n)$. Then as $n \approx k g$, $n \approx k \log n$, so $n \approx k \log k$ with some bootstrap. Therefore, $|S| \geq \omega(n) = \Theta(k \log k)$. 
+\end{document}
+
+

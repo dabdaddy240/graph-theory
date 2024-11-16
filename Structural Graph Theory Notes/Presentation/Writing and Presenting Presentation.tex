@@ -1,0 +1,142 @@
+\documentclass[]{beamer}
+\usetheme{Metropolis}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{svg}
+\usepackage{todonotes}
+\usepackage{tikz}
+\usepackage{svg}
+
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\usepackage[mode=buildnew,subpreambles=true]{standalone}
+\makeatletter
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}
+{%
+	\leavevmode%
+	\hbox{%
+		\begin{beamercolorbox}[wd=1\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+		\end{beamercolorbox}%
+	}%
+	\vskip0pt%
+}
+\makeatother
+
+%\setbeameroption{show notes on second screen}
+\setbeamertemplate{page number in head/foot}{}
+\setbeamertemplate{title in head/foot}{}
+\setbeamertemplate{author in head/foot}{}
+%opening
+\title{Book embeddings of $K_t$-minor free graphs}
+\author{Eric Luu}
+\newcommand{\ops}{\overset{\text{ops}}{\leftrightarrow}}
+\begin{document}
+
+%\begin{frame}{$K_t$-minor-free graphs, $ 1 \leq t \leq 5$}
+%	\begin{itemize}
+%		\item $K_1$-minor-free graph is the empty graph
+%		\item $K_2$-minor-free graphs have no edges
+%		\item $K_3$-minor-free graphs are forests
+%		\item $K_4$-minor-free graphs are graphs whose biconnected components are series parallel graphs
+%		\item $K_5$-minor-free graphs are almost planar graphs.
+%	\end{itemize}
+%\end{frame}
+
+\begin{frame}{Embedding graph on surfaces}
+	Euler genus of a surface is $2\times$ number of holes $+$ number of crosscaps. 
+	\par
+	Genus of graph $G$ is the smallest Euler genus surface $\Sigma$ such that you can \textit{embed} $G$ on $\Sigma$. 
+	\begin{figure}[h]
+		\includesvg{Drawings/TorusGridGraph3DEmbeddings_1000.svg}
+		\caption{Torus graph (Wolfram Mathworld)}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Book-Embedding}
+	\begin{figure}[h]
+		\begin{minipage}{0.5\textwidth}
+			\includestandalone[width = \linewidth]{Drawings/Book_Embedding}
+		\end{minipage}%
+		\begin{minipage}{0.5\textwidth}
+			\begin{block}{Books}
+				\begin{itemize}
+					\item A \textit{book} is a collection of pages glued together on a common boundary.
+					\item A \textit{book-embedding} of a graph is where the vertices are on the common boundary and the edges do not cross.
+				\end{itemize}
+			\end{block}
+		\end{minipage}
+	\end{figure}
+	
+\note{	Embed graph $G$ on series of half-planes identified on edge where:
+	\begin{itemize}
+		\item $V(G)$ lies on boundary of half-planes
+		\item $E(G)$ lies on a single half plane so that no two edges cross
+	\end{itemize}
+	Half planes are \textit{pages}, vertices lie on spines of a book. 
+	So book embedding has a vertex ordering $(\leq)$ and a function $\varphi: E(G) \rightarrow \lbrace 1, 2, ..., n \rbrace$ where we assign edges to pages.
+	Can use cyclic ordering to not worry about the first vertex. Many proofs are agnostic to the first starting vertex.}
+\end{frame}
+
+\begin{frame}{Pagenumber}
+	\begin{itemize}
+		\item Book-thickness was investigated in 1970s
+		\item Applications to chip design, knot theory, abstract algebra
+	\end{itemize}
+	\begin{itemize}
+		\item Pagenumber of $G$ is the least number of pages needed to embed $G$.
+		\item $G$ has pagenumber 1 if and only if $G$ is outerplanar ( all vertices on one face )
+		\item $G$ has pagenumber $\leq 2$ if and only if $G$ is Hamiltonian planar.
+	\end{itemize}
+	
+	\begin{theorem}[Heath and Istrail]
+		Graphs embedded on surfaces of bounded genus have bounded pagenumber.
+	\end{theorem}
+\end{frame}
+
+\begin{frame}{Graph minors}
+	$H$ is a \textit{graph minor} of $G$ if $H$ can be obtained from $G$ by contracting edges, deleting edges, and deleting vertices.
+	
+	$G$ is $H$-free if $H$ is not a minor of $G$. 
+	\note{Draw picture of a minor on whiteboard}
+\end{frame}
+
+\begin{frame}
+	$K_t$ is the complete graph on $t$ vertices.
+	\begin{definition}[$K_t$-minor free]
+		A graph $G$ is $K_t$-minor free if $K_t$ is not a minor of $G$.
+	\end{definition}
+	\begin{figure}[h]
+		\centering
+		\includestandalone[width=0.4\textwidth]{Drawings/P10}
+		\includestandalone[width=0.4\textwidth]{Drawings/P10_Contraction_To_K5}
+		\caption{The Petersen graph has a $K_5$ minor.}\label{P10contraction}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Research question}
+	\begin{conjecture}
+		Is there a function $f(t)$ such that if $G$ is $K_t$-minor free, $G$ is embeddable on $f(t)$ pages?
+	\end{conjecture}
+	There are reasons to believe the answer is yes!
+	\begin{itemize}
+		\item Graphs which are $K_t$-minor free are almost like graphs with bounded genus.
+	\end{itemize}
+\end{frame}
+
+%\begin{frame}{$K_t$-minor free graphs}
+%	\begin{conjecture}
+%		$K_t$-minor free graphs have bounded pagenumber.
+%	\end{conjecture}
+%\end{frame}
+
+
+%\begin{frame}{Conclusion}
+%	Book thickness is a useful graph parameter
+%	Generalises planarity
+%	Bounded book thickness- interesting problems
+%\end{frame}
+\note{Add notes on Heath + Istrail paper}
+
+\note{Do not discuss Robertson-Seymour, will take up 40 minutes}
+\end{document}

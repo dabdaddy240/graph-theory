@@ -1,0 +1,85 @@
+\documentclass[]{article}
+\usepackage[margin = 1in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[english]{babel}
+\usepackage{url}
+\usepackage{todonotes}
+\usepackage{csquotes}
+
+\usepackage{hyperref}
+\usepackage[noabbrev, capitalise]{cleveref}
+% Commands
+\newcommand{\tree}{\mathcal{T}}
+\newcommand{\tw}{\text{tw}}
+\newcommand{\had}{\text{had}}
+\newcommand{\pw}{\text{pw}}
+\newcommand{\td}{\text{td}}
+\newcommand{\pn}{\text{pn}}
+% Environments
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{example}[theorem]{Example}
+
+\numberwithin{theorem}{section}
+\numberwithin{equation}{section}
+
+
+%opening
+\title{Structural graph theory}
+\author{Eric Luu}
+
+\begin{document}
+Structural graph theory is the analysis of substructures in graphs. Questions in structural graph theory are typically of the following:
+
+\begin{itemize}
+	\item Suppose we have a family of graphs $\mathcal{G}$ which have/ do not have a certain property. Then is there a nice structure to graphs in $\mathcal{G}$?
+	\item Suppose we have a family of graphs $\mathcal{G}$ which have/do not have a certain property. Then is there a forbidden structure such that $G$ is in $\mathcal{G}$ if and only if it does not have this forbidden structure?
+\end{itemize}
+Of course, these properties have to be meaningful. While computation of many of these properties is in NP, finding relationships between these properties has been a main goal of structural graph theory for a long time. 
+Some properties in structural graph theory are, in no particular order:
+
+\begin{itemize}
+	\item chromatic number
+	\item maximum/minimum degree
+	\item Girth
+	\item planarity
+	\item k-planarity
+	\item $H$-minors
+	\item Treewidth
+	\item Pathwidth
+	\item Pagenumber/Book-thickness
+	\item Genus
+\end{itemize}
+Many of these concepts are highly connected to topological graph theory, which deals with embedding graphs on some space. Indeed, many concepts in structural graph theory preserve some topology of the graph, in a loose way. However, proofs in structural graph theory tend to not think about the underlying space, like in topological graph theory.
+
+To start off with, we will illustrate with a very simple example of a natural question in structural graph theory. 
+
+\subsection{Menger's theorem}
+Given a graph $G$, how many vertex-disjoint paths(sets of paths between two vertices where the only pairwise common vertices are the endpoints) are there between any two vertices? The answer comes from Menger's theorem.
+\begin{theorem}[Menger's theorem]
+	A graph is $k$-vertex-connected (meaning that removing any set of $k-1$ vertices preserves the connectivity, but there exists a vertex of set of size $k$ which does not) if and only if every pair of vertices has at least $k$ internally disjoint paths.
+\end{theorem}
+
+We recreate a proof from \url{https://www.sciencedirect.com/science/article/pii/S0012365X00000881?via%3Dihub}.
+\todo{flesh out}
+\begin{proof}
+	content...
+\end{proof}
+There are two graph properties at play in this theorem. One is the number of internally disjoint paths in $G$ between any two vertices. Another is the size of the separator of $G$, a set which separates $G$. This theorem is saying that if this set $S$ is always larger than some constant $k$, then the number of vertex-disjoint paths between any two vertices is at least $k$. 
+
+Consider the set of graphs $\mathcal{G}$ where $G \in \mathcal{G}$ if and only if between any two vertices $u, v$ in $G$, there are $k$ disjoint paths. Then $\mathcal{G}$ has a forbidden substructure, separators of size $< k$. This is an example of a question that would be asked in structural graph theory.
+
+\subsection{Forbidden minors}
+One of the most important theorems is the Robertson-Seymour graph minor theorem
+
+\end{document}
