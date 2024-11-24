@@ -14,6 +14,7 @@
 \newcommand{\td}{\text{td}}
 \newcommand{\bn}{\text{bn}}
 \newcommand{\ltw}{\text{ltw}}
+\newcommand{\degen}{\text{degen}}
 % Environments
 
 \newtheorem{theorem}{Theorem}
@@ -407,7 +408,7 @@ We shall prove this using the following lemma. We define a \textit{hereditary cl
 	Fix $c > 0$ and $\varepsilon$ in $(0, 1)$. Then suppose for all $n$-vertex graphs $G \in \mathcal{G}$, $G$ has a balanced separator of order at most $c n^{1-\varepsilon}$. Then every $n$-vertex graph $G \in \mathcal{G}$ has $\pw(G) \leq \td(G) \leq c' n^{1- \varepsilon}$. 
 \end{lemma}
 \begin{proof}
-	We use the balanced separator concept from earlier, and use induction on the number of verticesWe have that the balanced separator $S$ where $|S| \leq cn^{1-\varepsilon}$ and consider the connected components of $G - V(S)$. As $G$ is minor closed, then each connected component of $G - V(S)$ will have treedepth at most $c'(n/2)^{1 - \varepsilon}$, where $c' := \frac{c}{1 - 1/(2^{1-\varepsilon})}$. Then suppose we form a complete graph on $S$ and add edges from $S$ to all the vertices in $G - V(S)$ to form the closure of a tree of height at most $c n^{1 - \varepsilon} + c'(n/2)^{1 - \varepsilon}$. However, we have that:
+	We use the balanced separator concept from earlier, and use induction on the number of vertices. Consider the balanced separator $S$ where $|S| \leq cn^{1-\varepsilon}$ and consider the connected components of $G - V(S)$. As $G$ is minor closed, then each connected component of $G - V(S)$ will have treedepth at most $c'(n/2)^{1 - \varepsilon}$, where $c' := \frac{c}{1 - 1/(2^{1-\varepsilon})}$. Then suppose we form a complete graph on $S$ and add edges from $S$ to all the vertices in $G - V(S)$ to form the closure of a tree of height at most $c n^{1 - \varepsilon} + c'(n/2)^{1 - \varepsilon}$. However, we have that:
 	\begin{align*}
 		c n^{1 - \varepsilon} + c'(n/2)^{1 - \varepsilon} &= c n^{1 - \varepsilon} + \frac{c}{1 - 1/(2^{1-\varepsilon})}(n/2)^{1 - \varepsilon}\\
 		&= \frac{1}{1 - 1/2^{1-\varepsilon}} (c n^{1 - \varepsilon}(1 - 1/(2^{1-\varepsilon})) + c (n/2)^{1 - \varepsilon})\\
@@ -898,6 +899,111 @@ $|S'| \leq |S| (\tw(G) + 1) = |S|(c(H, k) + 1)$. But $C(H, k) = O(k^9 |V(H)|^9)$
 Why $k \log k$? There exists infinitely many integers $n$ such that there is an $n$-vertex graph with treewidth $\Theta(n)$ and girth $g = \Theta(\log n)$. These are Ramanujan graphs.
 
 Take $k = \lfloor n/g \rfloor + 1$. Then $k = \lfloor n/g \rfloor + 2$. $G$ has $\leq n/g < k - 1$ disjoint cycles. Therefore it fails property 1. Suppose $S \leq V(G)$ has no cycles. As $\Omega(g) \leq \tw(G) \leq |S| + 1$, then $|S| \in \Omega(n)$. Then as $n \approx k g$, $n \approx k \log n$, so $n \approx k \log k$ with some bootstrap. Therefore, $|S| \geq \omega(n) = \Theta(k \log k)$. 
+
+\section{List colouring}
+Let $G$ be a graph.
+A list assignment $L$ is a function $V(G) \rightarrow 2^c$ where $c$ is a set of colours. A function $f: V(G) \rightarrow c$ is an $L$-colouring if $f(v)$ is in $L(v)$ for all $v \in V(G)$. $G$ is $k$-list colourable (or $k$-choosable) if $G$ is $L$-colourable for every list-assignment $L$ with $|L(v)| \geq k$ for all $v \in V(G)$. 
+
+$\chi_\ell(G)$ is defined to be the list-colouring number of $G$. The list colouring number of $G$ is defined to be the smallest $k$ so that $G$ is $k$-colourable.
+\subsection{Bounds on list colouring}
+Recall the degeneracy of a graph $G$ is $\min_{H \subseteq G}\delta(H)$. 
+Let $\degen(G)$ be the degeneracy of $G$. 
+\begin{itemize}
+	\item $\chi(G)\leq \chi_\ell(G)$
+	\item $\chi_\ell(G)\leq \degen(G) + 1$.
+\end{itemize}
+If $G$ is $k$-list-colourable, then as the $k$-list colourable includes the list-assignment $f(v) = \{1, \ldots, k\}$, then $G$ is $k$-colourable. This is the first inequality. The second inequality comes from greedily colouring $G$.
+\begin{proof}
+	We prove using induction on $|V(G)|$. For the base case, $|V(G)| = 1$. Then $\chi_\ell(G) = 1 \leq \degen(G) + 1$.
+
+	Now suppose $|V(G)|> 1$, and $L$ is a $(\degen(G) + 1)$-list assignment of $G$. Let $v$ be a vertex of minimum degree, and consider $G - v$. This subgraph has an $L$-colouring by the induction hypothesis. Now consider $N_G(v)$ and the colours assigned. Since $v$ is given $\degen(G) + 1$ colours from $L(v)$, and $|N_G(v)| \leq \degen(G)$, there is a colour in $L(v)$ not assigned to any of the neighbours of $v$. Therefore, we can assign to $v$ a colour that is not any of its neighbours, so $G$ is $L$-colourable.
+\end{proof}
+
+\begin{lemma}
+	For all $k$ there exists a triangle-free graph $G$ so that $k = \chi(G) = \chi_\ell(G) = \degen(G) + 1$. 
+\end{lemma}
+\begin{proof}
+	Let $G_1 = K_1$. Then given $G_{k-1}$, let $G_k$ be $k-1$ copies of $G_{k-1}$, and for every choice $\{v_1, v_2, \ldots v_{k-1}\}$ of $k-1$ vertices (with replacement) in $G_{k-1}$, add a vertex adjacent to the first copy of $v_1$, the second copy of $v_2$, and so on. In total, there are $|V(G_{k-1})|^{k-1}$ new vertices added. We claim that $G_k$ is not $(k - 1)$-colourable. 
+
+	Suppose $G_k$ is $(k-1)$-colourable, and this colouring is best possible. Let $v_i$ be a vertex in the $i$-th copy of $G_{k-1}$ with colouring $i$. But this means that the vertex adjacent to $(1, v_1), (2, v_2), \ldots, (k-1, v_{k-1})$ has all neighbours assigned different colours. Then $\chi(G_k) = k$. Finally, $G_k$ is triangle-free and has degeneracy $k-1$. 
+\end{proof}
+
+If $G$ is triangle-free, then the maximum chromatic number is $\Theta(\sqrt(n/\log n))$. This is by induction. If $\Delta(G) \leq o(\sqrt(n))$, then we can colour $G$ with $\sqrt(n/\log n)$ colours. Otherwise, there is a vertex $v$ of high degree, so we delete $v$ and $N_G(v)$ and colour $N_G(v)$ colour $2$ and $v$ colour $1$. Then $G - v - N_G(v)$ has $n - O(\sqrt{n})$ vertices, so we can use induction.
+
+A lower bound is by Kim(1995). He showed that $R(3, t)$ has asymptotic order of magnitude $t^2/ \log t$. This means that there exists an $n$-vertex triangle-free $G$ with independence number $\leq O(\sqrt{n} \log n)$. 
+
+\subsection{Bipartite graphs}
+We will show that there exist bipartite graphs with unbounded list chromatic number. This shows that chromatic number does not bound list chromatic number from above. 
+
+\begin{theorem}
+	For every integer $n \geq 4$, $\chi_\ell(K_{n,n}) \geq \log_4(n)$.
+\end{theorem}
+
+\begin{proof}
+	Fix an integer $k \geq 0$. Let $n = \binom{2k-1}{k}$. Let $A, B$ be the bipartition of $K_{n,n}$, so $|A| = \binom{2k-1}{k} = |B|$. Now let $c = [2k-1]$. For every vertex in $A$, choose a unique set of $k$ vertices from $C$, and the same for $B$, so no two vertices in $A$ are assigned the same list from $c$.
+	
+	Now suppose $K_{n,n}$ is $L$-colourable. In $A$, at least $k$ colours are used, because if $k$ colours are unused, then there is a vertex in $A$ which is assigned no colours. Similarly for set $B$. Then there is a colour in $A$ and $B$ which is assigned the same colour. Therefore, there is no list assignment for $B$. So $n = \binom{2k-1}{k} \approx \frac{4^k}{\sqrt{k}}$. Then $k \approx \log_4(n)$. 
+\end{proof}
+
+Alon showed that for all graphs $G$ with average degree $d$, $\chi_\ell(G) \geq c \log d$ for some $c$. Let $L(v)$ assign $k$ regular elements of $c$. Then the probability that $G$ is not $L$-colourable is nonzero, so there is a choice that bounds the degeneracy. Therefore, 
+$\log(\d(G))\leq \chi_\ell(G) \leq \degen(G) + 1$. 
+
+\subsection{Planar graphs}
+Erdos, Rubin and Taylor conjectured that every planar graph $G$ is $5$-choosable. They further conjectured that this bound is tight, meaning there exists planar graphs which are not $5$-choosable. There are multiple proofs of the second statement. In fact, Maryam Mirzakhani (aged 19!) constructed such a graph.  
+
+\begin{theorem}[Thomassen]
+	Every planar graph $G$ is $5$-choosable.
+\end{theorem}
+
+\begin{proof}
+	Let $G$ be a near-triangulation of the plane, meaning all faces but the outerface of $G$ is a triangle. Let $B$ be the outerface and let $C$ be the boundary of $B$. $C$ is a subgraph of $G$ and is a cycle $v_1 v_2 \ldots v_p v_1$. Now let $L$ be a list assignment such that $L(v_1) = 1$, $L(v_2) = 2$, $|L(v)| \geq 3$ if $v \in C - \{v_1, v_2\}$, and $|L(v)| \geq 5$ if $v \in G - C$. Then $G$ is $L$-colourable. 
+
+	If $p = 3$, then $G$ is obviously $5$-choosable. Now we assume $V(G) \geq 3$, and we induct over $|V(G)|$. If there is a chord $v_i v_j$ in $G[V(C)]$, then we apply the induction hypothesis to the cycle $v_1 v_2 \ldots v_i v_j v_{j + 1} \ldots v_1$ and its interior, call this graph $G_1$. Then to $v_i v_j v_{j - 1} \ldots, v_{i + 1} v_i$ and its interior, call this subgraph $G_2$. $v_i v_j$ become the start of the new cycle in $G_2$ and is coloured by the choice of colour in $G_1$. So we assume that the subgraph induced by $C$ in $G$ is chordless. 
+
+	If this is the case, let $v_1, u_1, u_2, \ldots, u_k v_{p-1}$ be the neighbours of $p$ in the clockwise order around $v_p$. As $C$ is triangulated, $G$ contains the path $P = v_1, u_1, u_2, \ldots, u_k v_{p-1}$. As $C$ is chordless, $P \cup (C - v_p)$ is a cycle $C'$. Let $x, y$ be two distinct colours in $L(v_p) - L(v_1)$. Define $L'(u_i) = L(u_i) - \{x, y\}$, and $L'(v) = L(v)$ otherwise. Every colour on the boundary has 3 colours and $v_1, v_2$ are given a single colour. Every vertex on the interior is given 5 colours. Then apply the induction hypothesis. Finally, we colour $v_p$ the colour of $x$ or $y$ so that $v_p$ is given a different colour to $v_{p-1}$.
+\end{proof}
+
+\subsection{Graphs on surfaces}
+Every graph on a surface of Euler genus $g$ has average degree $d(G) \leq \lfloor \frac{1}{2} (7 + \sqrt{1 + 24g}) \rfloor$. This implies that $\chi(G) \leq \chi_\ell(G) \leq \lfloor \frac{1}{2} (7 + \sqrt{1 + 24g}) \rfloor$. This is tight for every surface except the sphere and the Klein bottle. $K_7$ does not embed on the Klein bottle. There is a conjecture that a toroidal graph is $5$-choosable iff it is also $5$-colourable. 
+
+\section{Hadwiger's conjecture}
+
+Is it true that $\chi_\ell(G) \leq \had(G) + 1$? No. (Joret + Wood): There exists a $G$ such that $\chi_\ell(G) \geq \frac{4}{3} \had(G) + c$. 
+
+For all $t$ there exists a $K_{3t + 1}$-minor free $G$ that is not $4t$-choosable. 
+
+\begin{proof}
+	Let $H = K_{4t + 2} - M_{2t + 1}$ where $M_{2t + 1}$ is a perfect matching on $2t + 1$ edges. Assign each matched vertex to sets $V$ and $W$. 
+	$K_{3t + 1}$ is the largest complete graph minor on $H$, so $H$ is $K_{3t + 2}$-minor-free.
+	
+	For any $c_1, \ldots c_{2t + 1} \in \{1, \ldots, 4t\}$, let this be a copy of $H$, $H(c_1, \ldots, c_{2t + 1})$ where $v_1, \ldots v_i \in V$ is assigned lists $L(v_i) = \{1, \ldots, 4t\}$ and $L(w_i)$ where $w_i \in W$ is assigned $\{1, \ldots, 4t + 1\} \setminus \{c_i\}$. Let $G$ be the graph constructed from the union of $H(c_1, \ldots, c_{2t + 1})$ over all possible choices of $c_1, \ldots c_{2t + 1}$, and identify all $v_1$ in every copy to a single vertex, $v_2$ in every copy to a single vertex, and so on. As we are gluing on a clique sum of $2t + 1$ vertices, $G$ is $K_{3t + 2}$-minor-free. The total number of colours used is $4t + 1$. Suppose $G$ is $L$-colourable with function $f$. $|V(H)| = 4t + 2$ so there exists an $i$ in every copy of $H$ where there is a vertex pair $v_i w_i$ such that $f(v_i) = f(w_i)$, from the pidgeonhole principle. 
+	
+	In $H(c_1, c_{2t + 1})$ there exists a $v$ with $f(v) \neq c_i$ for every $c_i$. Since we this happens $2t + 1$ times, look at $H(c_1, \ldots, c_{2t + 1})$. Then $v_1, v_2$ are given colours that are not $c_i$ but this contradicts the above statement that in every $H$ there is a vertex pair $f(v_i) = f(w_i)$. 
+\end{proof}
+
+\begin{theorem}[Linusson and Wood]
+	Every $K_5$-minor-free graph $G$ is $5$-choosable.
+\end{theorem}
+
+\begin{proof}
+	Let $B \subseteq V(G)$ be a subset of vertices of $G$. Let $G^{B + \alpha}$ be the graph with vertex set $V(G) \cup \{\alpha\}$ for a new vertex $\alpha$ and edge set $E(G) \bigcup_{b \in B} \alpha b$. $B \subseteq V(G)$ is a boundary of $G$ if $G^{B + \alpha}$ is also $K_5$-minor-free. 
+
+	Given $K_5$-minor-free graph $G$, boundary $B \subseteq V(G)$, clique $A \subseteq B$, list-assignment $L$, where $|L(a)| = 1$ for all $a \in A$, $L(a) \cap L(b) = \emptyset$ for all $a, b \in A$ distinct, $|L(x)| \geq 3$ for all $x \in B \setminus A$, $|L(x)| \geq 5$ for all $x \in V(G) \setminus B$, $G$ is $L$-colourable.
+
+	Base case: Single vertex. Always $5$-colourable.
+	Induction on $(V(G), |A|)$.
+	Case 1: If $B = \emptyset$, add a single vertex $v$ to $A, B$, and colour $v$ from its list arbitrarily. 
+
+	Case 2: $A = \emptyset$. Pick $v \in B$, place in $A$. Colour $v$ arbitrarily. 
+
+	Case 3: $G$ is disconnected. Apply to every component. 
+
+	Case 4: $G$ has a cut vertex $v \in B$. $A$ is in connected component $G_1$, rest is in $G_2$. Induct on $G_1, A, B \cap G_1$. Then $G_2, \{v\}, B \cap G_2$. 
+	
+	Case 5: $G$ has cut vertex $v$, $v \neq B$, $v$ separates $B$.
+\end{proof}
+
+
 \end{document}
 
 
