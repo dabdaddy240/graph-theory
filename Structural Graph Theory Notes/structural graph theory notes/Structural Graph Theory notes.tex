@@ -43,7 +43,7 @@
 \begin{definition}[Tree-decomposition]
 	The tree-decomposition $\tree$ of a graph $G$ is defined as a tree $T$ with associated \textit{bags} $\lbrace B_x : x \in V(T) \rbrace$ such that:
 	\begin{itemize}
-		\item for all $v \in V(G)$, the subset of vertices $\lbrace x \in V(T): v \in B_x \rbrace$ in $V(T)$ induces a connected subtree in $V(T)$.
+		\item for all $v \in V(G)$, the subset of vertices $\lbrace x \in V(T): v \in B_x \rbrace$ in $V(T)$ induces a nonempty connected subtree in $V(T)$.
 		\item For all edges $vw \in E(G)$, there exists a bag $B_x$ such that both $v$ and $w$ are in the bag $B_x$.
 	\end{itemize}
 \end{definition}
@@ -175,6 +175,16 @@ For a graph $G$, a \textit{tree-partition} of $G$ is a tree $T$ with associated 
 \section{$O(\sqrt{n})$-bounded treewidth}
 A family of graphs $\mathcal{G}$ has $O(\sqrt{n})$ bounded treewidth if, as the number of vertices increases in $\mathcal{G}$, the treewidth is bounded above by a constant times $\sqrt{n}$. We shall show that all planar graphs have bounded treewidth, and can extend this definition to graph families of bounded genus and crossings. [Dujmovic, Morin, Wood] 
 
+\subsection{Examples of graph families with $O(\sqrt{n})$ bounded treewidth}
+
+\begin{itemize}
+	\item Planar graphs
+	\item Bounded genus graphs
+	\item $H$-minor free where $H$ is a fixed graph
+	\item $k$-planar graphs
+	\item $(g, k)$-planar graphs
+\end{itemize}
+
 \subsection{Layered treewidth}
 A \textit{layering} of a graph $G$ is a partition of the vertex set of $G$ into sorted sets $V_1, V_2, ..., V_k$ such that for all edges $vw \in E(G)$, if $v \in V_i$ and $w \in V_j$ then $|i - j| \leq 1$. The \textit{layered treewidth number} $\ltw(G)$ is defined as the smallest $k$ such that there exists a layering $V_1, V_2, ...$ of $V(G)$ and there is a tree-decomposition $(B_x: x \in V(T))$ and $|V_i \cap B_x| \leq k$ for all $i$ and all $x$. 
 \begin{theorem}
@@ -272,8 +282,7 @@ We define $\had(G)$ to be the largest $t$ such that $G$ has a $K_t$ minor.
 	If $G$ is planar with $n$ vertices and $m$ edges, then we have that $m \leq 3n -6$. However, we have that $K_5$ has $5$ vertices and $10$edges, but we have that $ 10 > 3 \times 5 - 6$, so $K_5$ is not planar. As the family of planar graphs is minor-closed, then if $G$ is planar, then $K_5$ is minor-free.
 \end{proof}
 
-We can use a different argument to show that $K_{3,3}$ is not embeddable on the plane, by using the fact that $K_{3,3}$ is triangle-free. 
-(INSERT PROOF HERE)
+We can use a different argument to show that $K_{3,3}$ is not embeddable on the plane, by using the fact that $K_{3,3}$ is triangle-free. Suppose $K_{3,3}$ is embeddable on the plane. Then no face is a triangle as $K_{3,3}$ is triangle-free. But this means that the number of faces that $K_{3,3}$ has in total is at least $3 \times 4/2 = 6$ faces. But $6 - 9 + f = 2$, so $f = 5$. Therefore $K_{3,3}$ is nonplanar. 
 
 \subsubsection{Genus-g graphs}
 We define the genus $g$ of a surface to be 2 times the number of handles + the number of crosscaps. From topology, we have that we can add a handle to crosscaps to form 3 crosscaps. Therefore, the Euler characteristic $\chi = 2 - g$ for both orientable and non-orientable surfaces. Note that the genus is defined slightly differently from topology. We do this to allow non-orientable and orientable surfaces to coincide in definition.
@@ -394,10 +403,33 @@ The proof of this corollary is by calculating the tree-depth of the tree-decompo
 \section{Classification of graph families}
 As before, we could classify graph families in this way:
 \begin{enumerate}
-	\item $\tw(G) \leq O(1)$ for all $G \in \mathcal{G}$. These graph families will include trees and paths, so the pathwidth and treedepth is unbounded, but from the lemma above, $\tw(G) \leq O(\log n)$ for all graphs in the class, where we hide the treewidth.
-	\item $\tw(G) \leq O(n^{1/2})$ for all $G \in \mathcal{G}$.
-	\item $\tw(G) \leq O(n^{1- \varepsilon})$ fixed $\varepsilon > 0$, for all $G \in \mathcal{G}$.
-	\item $\tw(G \geq \Omega(n))$ for all $G \in \mathcal{G}$.
+	\item $\tw(G) \leq O(1)$ for all $G \in \mathcal{G}$. These graph families will include trees and paths, so the pathwidth and treedepth is unbounded, but from the lemma above, $\tw(G) \leq O(\log n)$ for all graphs in the class, where we hide the treewidth. Examples of classes are:
+	\begin{itemize}
+		\item Forests
+		\item Outerplanar graphs
+		\item Circumference $\leq k$
+		\item $H$-minor-free ($H$ planar)
+	\end{itemize}
+	\item $\tw(G) \leq O(n^{1/2})$ for all $G \in \mathcal{G}$. Examples are:
+	\begin{itemize}
+		\item Planar graphs
+		\item Bounded genus graphs
+		\item $H$-minor free where $H$ is a fixed graph
+		\item $k$-planar graphs
+		\item $(g, k)$-planar graphs
+	\end{itemize}
+	\item $\tw(G) \leq O(n^{1- \varepsilon})$ fixed $\varepsilon > 0$, for all $G \in \mathcal{G}$. Examples are:
+	\begin{itemize}
+	\item $d$-dim grids, $\varepsilon = 1/d$
+	\item touching graphs of $d$-dim spheres
+	\item $k$-ply $d$-system
+	\end{itemize}
+	\item $\tw(G \geq \Omega(n))$ for all $G \in \mathcal{G}$. Examples are:
+	\begin{itemize}
+	\item random graphs
+	\item Expander graphs
+	\item random $d$-regular graphs
+	\end{itemize}
 \end{enumerate}
 We shall prove a statement relating the path-width and tree-depth of a graph $G$ for families of graphs of the form $\tw(G) \leq O(n^{1- \varepsilon})$. 
 \begin{theorem}
@@ -980,13 +1012,27 @@ For all $t$ there exists a $K_{3t + 1}$-minor free $G$ that is not $4t$-choosabl
 	
 	In $H(c_1, c_{2t + 1})$ there exists a $v$ with $f(v) \neq c_i$ for every $c_i$. Since we this happens $2t + 1$ times, look at $H(c_1, \ldots, c_{2t + 1})$. Then $v_1, v_2$ are given colours that are not $c_i$ but this contradicts the above statement that in every $H$ there is a vertex pair $f(v_i) = f(w_i)$. 
 \end{proof}
-
+\subsection{$K_5$-minor-free graphs}
 \begin{theorem}[Linusson and Wood]
 	Every $K_5$-minor-free graph $G$ is $5$-choosable.
 \end{theorem}
 
+Let $G$ be a graph that is $K_t$-minor free. 
+Let $B \subseteq V(G)$ be a subset of vertices of $G$. Let $G^{B + \alpha}$ be the graph with vertex set $V(G) \cup \{\alpha\}$ for a new vertex $\alpha$ and edge set $E(G) \bigcup_{b \in B} \alpha b$. $B \subseteq V(G)$ is a boundary of $G$ if $G^{B + \alpha}$ is also $K_t$-minor-free. 
+
+\begin{lemma}
+	Let $\mathcal{G}$ be the set of $K_t$-minor-free graphs for some fixed $t$ and let $G \in \mathcal{G}$. Let $B$ be a boundary of $G$. Let $v \in B$. Then $C := (B \setminus \{v\}) \cup N_G(v)$ is an $M$-boundary of $H = G - v$. 
+\end{lemma}
+
 \begin{proof}
-	Let $B \subseteq V(G)$ be a subset of vertices of $G$. Let $G^{B + \alpha}$ be the graph with vertex set $V(G) \cup \{\alpha\}$ for a new vertex $\alpha$ and edge set $E(G) \bigcup_{b \in B} \alpha b$. $B \subseteq V(G)$ is a boundary of $G$ if $G^{B + \alpha}$ is also $K_5$-minor-free. 
+	Observe that $H^{C + \alpha}$ is isomorphic to $G^{B + \alpha}$ with edge $va$ contracted. Since $G^{B + \alpha}$ is in $\mathcal{G}$ and $\mathcal{G}$ is minor-closed, $H^{C + \alpha}$ is in $\mathcal{G}$. Then $C$ is a boundary of $H$. 
+\end{proof}
+
+\begin{lemma}
+	Let $x, y, z$ be distinct vertices in a graph $G$. Then there is a rooted $K_3$ minor in $x, y, z$ if and only if there is no vertex $u$ such that $G - u$ places $\{x, y, z\} - u$ in different components.
+\end{lemma}
+
+\begin{proof}
 
 	Given $K_5$-minor-free graph $G$, boundary $B \subseteq V(G)$, clique $A \subseteq B$, list-assignment $L$, where $|L(a)| = 1$ for all $a \in A$, $L(a) \cap L(b) = \emptyset$ for all $a, b \in A$ distinct, $|L(x)| \geq 3$ for all $x \in B \setminus A$, $|L(x)| \geq 5$ for all $x \in V(G) \setminus B$, $G$ is $L$-colourable.
 
@@ -996,11 +1042,19 @@ For all $t$ there exists a $K_{3t + 1}$-minor free $G$ that is not $4t$-choosabl
 
 	Case 2: $A = \emptyset$. Pick $v \in B$, place in $A$. Colour $v$ arbitrarily. 
 
-	Case 3: $G$ is disconnected. Apply to every component. 
+	Case 3: $G$ is disconnected. Induct on components of $G$. 
 
 	Case 4: $G$ has a cut vertex $v \in B$. $A$ is in connected component $G_1$, rest is in $G_2$. Induct on $G_1, A, B \cap G_1$. Then $G_2, \{v\}, B \cap G_2$. 
 	
-	Case 5: $G$ has cut vertex $v$, $v \neq B$, $v$ separates $B$.
+	Case 5: $G$ has cut vertex $v$, $v \neq B$, $v$ separates $B$. Then $G$ contains a separation $G_1, G_2$ where $G_1 \cap G_2 = \{v\}$ where $B$ is in both $G_1$ and $G_2$. Since $A$ is a clique, $A \subseteq V(G)$ wlog. Then $B \cap V(G_1)$ is a boundary of $G_1$. Similarly, $B \cap V(G_2)$ is a boundary of $G_2$, and adding $v \in A$, and letting $v \in V(G_2)$ be coloured so it matches its colour in $G_1$ holds. 
+
+	Case 6: $G$ contains a cutset $v, w$ separating two vertices of $B$, $v \in B$. Suppose $vw$ is not an edge. Then adding the edge $vw$ does not add a $K_5$ minor. Let $G'$ be the graph obtained from $G^{B + \alpha}$ by adding $vw$. Then since $\alpha, v, w$ is a separator of $G'$ into $G_1$, $G_2$ then all we have to show is that $G_1 + vw$ is $K_5$-minor-free. This is done by contracting $G_2$ to the edge $vw$. Then this graph is also not $K_5$-minor-free. Similarly for $G_2$, $G_2 + vw$ is $K_5$-minor-free. Then since we glue on $K_3$, $G'$ is $K_5$-minor-free so $G + vw$ is also $K_5$-minor-free. Now assume $A$ is a clique and $A \subseteq V(G_1)$. Let $B_1$ be an $M$-boundary. $G_1$ can be given colours which determine the colours of $G_2$ with boundary $B \cup \{w\} \cap V(G_2)$ and $A = \{v,w\}$. 
+
+	Case 7: Vertex $v \in B$ has degree $\geq 3$. Let $x,y,z$ be neighbours of $v$ in $B$. Then if $G - v$ has a $K_3$ minor rooted at $x, y, z$, then adding $v$, $\alpha$ produces a $K_5$ copy in $G^{B + \alpha}$. So $G - v$ contains no $K_3$ minor rooted at $x, y, z$. By lemma $5$, for some $w \in G - v$, all the vertices in $\{x, y, z\} \setminus w$ are in distinct components for $G - \{v, w\}$. Then $\{v, w\}$ is a cutset so we go to case 5 or 6.
+
+	Case 8: $G[B]$ has max degree $\leq 2$. $G[A]$ is a component of $G[B]$. Let $v \in A$, let $G' = G - v, A' = A \setminus B$, $B' = (B \setminus \{v\}) \cup N_G(v)$. $B'$ is a boundary of $G'$. Let $L'(u) = L(u) \setminus L(v)$ for every $u \in N_G(v) \setminus B$. Since $|L(v)| = 1$ and $v$ has no neighbour in $B \setminus A$, then $|L'(x)| \geq 3$ for every $x \in B'$. Let $L'(x) = L(x)$ for every other vertex. Assign $v$ the colour in $L(v)$ this colour is not in $L'(u)$ for every $u \in N_G(v)$. 
+
+	Case 9: $G[A]$ is not a component of $G[B]$, $G[B]$ has max degree 2. Choose $v \in B \setminus A$ adjacent to $p \in A$. Since $G[B]$ has max degree at most $2$, $v$ has one other neighbour in $B$. Let $w$ be the heighbour. Let $G' = G - v$, $B' = B \setminus \{v\} \cup N_G(v)$. Then $B'$ is a boundary of $G'$. Let $c, d$ be distinct colours in $L(v) \setminus L(p)$. Let $L'(u) = L(u) \setminus \{c, d\}$ for every $u \in N_G(v)$. Let $L'(x) = L(x)$ for every other vertex $x$. Then $(G', A, B', L')$ is not a counterexample. Assign $v$ colour $c$ or $d$ different to $w$. Then $G$ is $L$-colourable. 
 \end{proof}
 
 
