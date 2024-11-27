@@ -117,7 +117,7 @@ A subset $X$ of $V(G)$ is a \textit{balanced separator} of $G$ if each component
 	For all graphs $G$, there exists a balanced separator of size $\tw(G) + 1$. 
 \end{theorem}
 \begin{proof}[Proof of balanced separator]
-	We take a tree-decomposition $\tree$ of treewidth $\tw(G) - 1$. For any edge $xy$ in $T$, denote the largest subtree containing $x$ that does not contain $y$ as $T_{x,y}$, and similarly denote $T_{y, x}$ as the same thing. If the size of the union of the corresponding bags of the nodes of $T_{x,y}$ is larger than the size of the union of bags in $T_{y, x}$, orient the edge $xy$ to point from $y$ to $x$, otherwise orient it the other way. Do this for every edge. Then let $x$ be the node where all arrows are pointing inwards, and let $B_x$ be the corresponding bag. Then $B_x$ is a separator of $G$ as we have that at most $|V(G)|/2$ vertices are in any component of $T$ by definition. Thus $B_x$ is a balanced separator of $G$. 
+	We take a tree-decomposition $\tree$ of treewidth $\tw(G)$. For any edge $xy$ in $T$, denote the largest subtree containing $x$ that does not contain $y$ as $T_{x,y}$, and similarly denote $T_{y, x}$ as the same thing. If the size of the union of the corresponding bags of the nodes of $T_{x,y}$ is larger than the size of the union of bags in $T_{y, x}$, orient the edge $xy$ to point from $y$ to $x$, otherwise orient it the other way. Do this for every edge. Then let $x$ be the node where all arrows are pointing inwards, and let $B_x$ be the corresponding bag. Then $B_x$ is a separator of $G$ as we have that at most $|V(G)|/2$ vertices are in any component of $T$ by definition. Thus $B_x$ is a balanced separator of $G$. 
 \end{proof}
 
 \subsection{Subset theorems}
@@ -129,7 +129,7 @@ A subset $X$ of $V(G)$ is a \textit{balanced separator} of $G$ if each component
 \end{proof}
 
 \begin{theorem}
-	For all graphs $G$, and all subsets $S$ of $V(G)$, there exists  two subgraphs $G_1$ and $G_2$ such that $G = G_1 \cup G_2$ and for all $i \in \lbrace 1, 2 \rbrace$, $|S \cup V(G_i) | \leq 2/3 |S|$.
+	For all graphs $G$, and all subsets $S$ of $V(G)$, there exists  two subgraphs $G_1$ and $G_2$ such that $G = G_1 \cup G_2$ and for all $i \in \lbrace 1, 2 \rbrace$, $|S \cap V(G_i) | \leq 2/3 |S|$.
 \end{theorem}
 \begin{proof}
 	Use the theorem above. Then we can form $G_1$ and $G_2$ to have at most $2/3 |S|$ the number of vertices in $|S|$, by sorting the subsets by the number of vertices in $S$. 
@@ -157,6 +157,7 @@ For a graph $G$, a \textit{tree-partition} of $G$ is a tree $T$ with associated 
 \begin{theorem}[Distel + Wood]
 	For all graphs $G$, $\tpw(G) \leq 18 (\tw(G) + 1) \Delta(G)$. 
 \end{theorem}
+\url{https://www.matrix-inst.org.au/wp_Matrix2016/wp-content/uploads/2023/07/Distel.pdf}
 
 \begin{lemma}
 	Fix $k$ and $d$. Let $G$ be a graph where $\tw(G) \leq k - 1$ and $\Delta(G) \leq d$. Then for any set $S \subseteq V(G)$ and $4k \leq |S| \leq 12kd$, there exists a tree-partition $\left( B_x : x \in V(T) \right)$ with width at most $18kd$ and bag $B_z$ where $deg_{T}(z) \leq \frac{|S|}{2k} - 1$ and $|B_z| \leq 3/2 |S| - 2k$.
