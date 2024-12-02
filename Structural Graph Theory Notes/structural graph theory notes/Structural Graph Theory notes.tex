@@ -9,6 +9,7 @@
 % Commands
 \newcommand{\tree}{\mathcal{T}}
 \newcommand{\tw}{\text{tw}}
+\newcommand{\tpw}{\text{tpw}}
 \newcommand{\had}{\text{had}}
 \newcommand{\pw}{\text{pw}}
 \newcommand{\td}{\text{td}}
@@ -76,7 +77,7 @@ The reason why the $-1$ appears in the definition of the with of a tree decompos
 	Let $T_1, ..., T_k$ be subtrees of a tree $T$ such that for every pair of trees, there is a vertex in common. Then there exists a vertex which is common to all trees.
 \end{lemma}
 \begin{proof}[Helly property]
-	If $T_1$, $T_2$ and $T_3$ are subtrees of $T$ such that the vertex sets are pairwise nonempty, then there is a common vertex in all three subtrees. If this is not the case, denote $v_1$ as a vertex in the intersection of $T_1$ and $T_2$, $v_2$ as the vertex in $T_1 \cap T_3$, and $v_3$ as the vertex in $T_2$ and $T_3$. Then there exists a unique path $P$ in $T_1$ from $v_1$ to $v_2$. Choose two vertices $x$ and $y$ on $P$ such that they are disjoint....
+	If $T_1$, $T_2$ and $T_3$ are subtrees of $T$ such that the vertex sets are pairwise nonempty, then there is a common vertex in all three subtrees. If this is not the case, denote $v_1$ as a vertex in the intersection of $T_1$ and $T_2$, $v_2$ as the vertex in $T_1 \cap T_3$, and $v_3$ as the vertex in $T_2$ and $T_3$. Then there exists a unique path $P$ in $T_1$ from $v_1$ to $v_2$. Choose two vertices $x$ and $y$ on $P$ such that they are disjoint.
 \end{proof}
 
 \begin{theorem}[Clique theorem]
@@ -149,9 +150,8 @@ A subset $X$ of $V(G)$ is a \textit{balanced separator} of $G$ if each component
 \end{proof}
 
 \section{Tree-partitions}
-\newcommand{\tpw}{\text{tpw}}
 
-For a graph $G$, a \textit{tree-partition} of $G$ is a tree $T$ with associated partition of the vertices of $G$ into bags $ \lbrace B_x : x \in V(T) \rbrace$ such that if $vw$ is an edge in $G$, then $v$ and $w$ are in the same bag, or the edge $xy$ is in $E(T)$, where vertices $x$ and $y$ have corresponding bags $B_x$ and $B_y$ containing $v$ and $w$ respectively. The \textit{width} of the tree-partition is defined as the largest bag in the tree-partition. The tree-partition width of a graph $G$, denoted as $\tpw(G)$, is the smallest width of all tree-partitions. 
+For a graph $G$, a \textit{tree-partition} of $G$ is a tree $T$ with associated partition of the vertices of $G$ into bags $ \lbrace B_x : x \in V(T) \rbrace$ such that if $vw$ is an edge in $G$, then $v$ and $w$ are in the same bag, or the edge $xy$ is in $E(T)$, where vertices $x$ and $y$ have corresponding bags $B_x$ and $B_y$ containing $v$ and $w$ respectively. The \textit{width} of the tree-partition is defined as the largest bag in the tree-partition. The tree-partition width of a graph $G$, denoted as $\tpw(G)$, is the smallest width of all tree-partitions. Layerings are examples of path-partitions, or tree-partitions where the underlying tree is a path. 
 
 
 \begin{theorem}[Distel + Wood]
@@ -160,18 +160,45 @@ For a graph $G$, a \textit{tree-partition} of $G$ is a tree $T$ with associated 
 \url{https://www.matrix-inst.org.au/wp_Matrix2016/wp-content/uploads/2023/07/Distel.pdf}
 
 \begin{lemma}
-	Fix $k$ and $d$. Let $G$ be a graph where $\tw(G) \leq k - 1$ and $\Delta(G) \leq d$. Then for any set $S \subseteq V(G)$ and $4k \leq |S| \leq 12kd$, there exists a tree-partition $\left( B_x : x \in V(T) \right)$ with width at most $18kd$ and bag $B_z$ where $deg_{T}(z) \leq \frac{|S|}{2k} - 1$ and $|B_z| \leq 3/2 |S| - 2k$.
+	Fix $k$ and $d$. Let $G$ be a graph where $\tw(G) \leq k - 1$ and $\Delta(G) \leq d$, and $|V(G)|\geq 4k$. Then for any set $S \subseteq V(G)$ where $4k \leq |S| \leq 12kd$, there exists a tree-partition $\left( B_x : x \in V(T) \right)$ with width at most $18kd$ and $\Delta(T) \leq 6d$. Furthermore, there is a bag $B_z$ where $S \subseteq B_z$, and $\deg_{T}(z) \leq \frac{|S|}{2k} - 1$ and $|B_z| \leq \frac{3}{2} |S| - 2k$.
 \end{lemma}
 \begin{proof}
+
+	Firstly, $|S| \leq |B_z| \leq \frac{3}{2} |S| - 2k$, so $|B_z| \leq 18kd - 2k < 18kd$. Furthermore, $\deg_T(z) \leq  \frac{|S|}{2k} - 1$, so $\deg_T(z) \leq 6d - 1 < 12kd$.  
 	
-	Case 0: $|V(G)| < 4k$: We place all the vertices in the same bag. Size of bag is $< 4k$, so the bag is definitely less than $18kd$. 
+	Case 1: $|V(G) - S| \leq 18kd$. Let $T$ be the tree on two vertices ${x, z}$, where $B_x = V(G) - S$ and $B_z = S$. Then $\delta(T) = 1$ and $\deg_T(z) = 1$. This satisfies the conditions above that the width is at most $18kd$ and $\Delta(T) \leq 6d$. Finally, we want to show $|B_z| \leq \frac{3}{2} |S| - 2k$ and $\deg_T(z) \leq \frac{|S|}{2k}- 1$. If $|S| = 4k$, then $|B_z| \leq 4k$ so $|B_z| \leq \frac{3}{2} |S| - 2k$. $\deg_T(z)  = 1 \leq \frac{|S|}{2k}- 1$.
 	\par
-	Case 1: $|V(G) - S| \leq 18kd$. Let $T$ be the tree on two vertices ${x, z}$, where $B_x = V(G) - S$ and $B_z = S$. Then we have that $\delta(T) = 1$ and $deg_T(z) = 1$, which satisfies the requirements above. We have that $|B_z| \leq 3/2 |s| - 2k$ and $deg_T(z) \leq |S|/2k - 1$. 
+	Case 2: $S$ small. $4k \leq |S| \leq 12k$. Let $S' := N_G(S) \setminus S$. Then $|S'| \leq d |S| \leq 12kd$. If $|S'| < 4k$, then add arbitrary vertices to $S'$ from $G - S - S'$ such that $|S'| = 4k$. Now $4k \leq |S'| \leq 12kd$. By the induction hypothesis, there exists a tree-partition $T$ of $G - S$ with width $\leq 18kd$ and $S'$ in one bag $B_{z'}$ with the desired properties. Then we add a leaf $z$ to $T$ with neighbour $z'$ and let $B_z = S$. As $4k \leq |S|$, $|S| \geq \frac{3}{2} |S| - 2k$, so $|B_z| \leq \frac{3}{2}  |S| - 2k$. Then $\deg_T(B_z) = 1 \leq \frac{|S|}{2k}- 1$. Finally, the degree of $z'$ is at most $\frac{|S'|}{2k} - 1$ which is at most $6d - 1$. So adding $z$ as a neighbour of $z'$ increases the degree by one so $\Delta(T) \leq 6d$. 
 	\par
-	Case 2: $S$ small case. $4k \leq |S| \leq 12k$. Let $S' := \bigcup \lbrace N_G(v) - S : v \in S \rbrace$. Then $|S'| \leq d |S| \leq 12kd$. If $|S'| < 4k$, then add arbitrary vertices to $S'$ from $G - S - S'$ such that $|S'| = 4k$. Now $4k \leq |S'| \leq 12kd$. By the induction hypothesis, there exists a tree-partition of $G - S$ with width $\leq 18kd$ and $S'$ in one bag. Then we add the bag $B_z = S$ to the tree that is connected only to $S'$. We have that as $4k \leq |S|$, it implies that $|S| \geq 3/2 |S| - 2k$, so $|B_z| \leq 3/2 |S| - 2k$ and $|S| \leq 12k$. Finally, $deg_T(B_z) = 1 \leq |S|/2k - 1$.
+	Case 3: $S$ large. $12k + 1 \leq |S| \leq 12kd$. From the balanced separator theorem, there exists induced subgraphs $G_1$, $G_2$ of $G$ where $G_1 \cup G_2 = G$ and $|G_1 \cap G_2| \leq k$, where $|S \cap V (G_i)| \leq  \frac{2}{3}|S|$ for each $i$ in $\lbrace 1, 2 \rbrace$. Let $X = G_1 \cap G_2$. Then let $S_i = (S \cap V(G_i)) \cup X$ for each $i$ in $\lbrace 1, 2 \rbrace$. 
+	Then \[|S_2| \geq |S - V(G_1)| \geq \frac{1}{3} |S| \geq 4k.\]
+	By symmetry, $|S_1| \geq 4k$. For an upper bound, \[S_i \leq \frac{2}{3} |S| + k \leq 8kd + k \leq 12kd.\]
+	Note $|S_1| + |S_2| \leq |S| + 2 |X| \leq |S| + 2k$. 
+	Therefore, $4k \leq |S_i| \leq 12kd$ for each $i$ in $\lbrace 1, 2 \rbrace$. Thus by induction, there exists a tree-partition of $G_i$ with width at most $18kd$, such that $\delta(T_i) \leq 6d$ and there is a $z_i$ such that $S_i \in B_{z_i}$, $|B_{z_i}| \leq \frac{3}{2} |S_i| - 2k$, $\deg_{T_i}(z_i) \leq \frac{|S_i|}{2k} - 1$. Then form the tree of $G$ by merging $z_1$ and $z_2$ together to form $z$, and let $B_z = B_{z_1} \cup B_{z_2}$. Then this is a tree-partition of $G$. 
 	\par
-	Case 3: $S$ large case. $12k + 1 \leq |S| \leq 12kd$. There exists induced subgraphs $G_1$, $G_2$ of $G$ where $G_1 \cup G_2 = G$ and $|G_1 \cap G_2| \leq k$, where $|S \cap V (G_i)| \leq 2/3 |S|$ for each $i$ in $\lbrace 1, 2 \rbrace$. Then let $S_i = (S \cap V(G_i)) \cup (G_1 \cap G_2)$ for each $i$ in $\lbrace 1, 2 \rbrace$. We have that $|S_2| \geq |S - V(G_1)| \geq 1/3 |S| \geq 4k$. By symmetry, $|S_1| geq 4l$. For an upper bound, $S_i \leq 2/3 |S| + k \leq 8kd + k \leq 12kd$. Therefore, $4k \leq |S_i| \leq 12kd$ for each $i$ in $\lbrace 1, 2 \rbrace$. Thus by induction, there exists a tree-partition of $G_i$ with width at most $18kd$, such that $\delta(T_i) \leq 6d$ and there is a $z_i$ such that $S_i \in B_{z_i}$, $|B_{z_i}| \leq 3/2 |S_i| - 2k$, $\deg_{T_i}(z_i) \leq |S_i|/2k - 1$. Then form the tree of $G$ by merging $z_1$ and $z_2$ together to form $z$, and let $B_z = B_{z_1} \cup B_{z_2}$. Then this is a tree-partition of $G$. By construction, $S \subseteq B_z$ and $|B_z| \leq |B_{z_1}| + |B_{z_2}| - |G_1 \cap G_2|$. Using the induction hypothesis, this is less than $18kd$, and the degree of $z$ is $|S|/2k - 1 < 6d$. Thus shown.  
+	Average degree decreases as one vertex in the bag is removed. Then the average degree of $|V(T)| \leq \frac{|V(G)|}{2k}$. Furthermore,
+
+	\begin{align*}
+		|B_z| &\leq |B_{z_1}| + |B_{z_2}| - |X|\\
+		&\leq \frac{3}{2}|S_1| - 2k + \frac{3}{2} |S_2| - 2k - |X|\\
+		&\leq \frac{3}{2}(|S| + 2|X|) - 4k - |X|\\
+		&= \frac{3}{2}|S| + 2|X| - 4k\\
+		&\leq \frac{3}{2} |S| - 2k.
+	\end{align*}
+	so the second property of $B_z$ holds. Finally,
+	\begin{align*}
+		\deg_T(z) &= \deg_{T_1}(z_1) + \deg_{T_2}(z_2)\\
+		&\leq \frac{|S_1|}{2k} - 1+ \frac{|S_2|}{2k} - 1\\
+		&\leq \frac{|S| + 2k - 2k}{2k} - 1\\
+		&\leq \frac{|S|}{2k} - 1
+	\end{align*}
+	This gives a tree-partition of width $18kd$ where $\Delta(T) \leq 6d$ and $|V(T)| \leq \frac{|V(G)|}{2k}$. 
+
 \end{proof}
+
+\subsection{Applications}
+
+A $v$-track layout of a graph $G$ is a proper colouring $v_1, \ldots, v_\ell$ and 
 
 \section{$O(\sqrt{n})$-bounded treewidth}
 A family of graphs $\mathcal{G}$ has $O(\sqrt{n})$ bounded treewidth if, as the number of vertices increases in $\mathcal{G}$, the treewidth is bounded above by a constant times $\sqrt{n}$. We shall show that all planar graphs have bounded treewidth, and can extend this definition to graph families of bounded genus and crossings. [Dujmovic, Morin, Wood] 
