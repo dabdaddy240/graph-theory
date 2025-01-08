@@ -1,0 +1,3 @@
+{"rule":"MORFOLOGIK_RULE_EN_AU","sentence":"^\\QIn 2023, I did two summer units at ANU.\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_AU","sentence":"^\\QIn addition, Prof. Saunderson taught us state-of-the-art techniques for finding optimal solutions, including interior-point methods.\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_AU","sentence":"^\\QThe first unit was a class on convex optimisation taught by Prof. James Saunderson.\\E$"}

@@ -5,6 +5,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{url}
+\usepackage{cleveref}
 
 % Commands
 \newcommand{\tree}{\mathcal{T}}
@@ -38,6 +39,42 @@
 \begin{document}
 
 \maketitle
+
+\section{Graph minors}
+A graph \(H\) is a \textit{minor} of a graph \(G\) if a graph isomorphic to \(H\) can be obtained from \(G\) by deleting vertices, deleting edges, and \textit{contracting} edges. Let $G$ be a graph and let $uv$ be an edge in $E(G)$. To \textit{contract} \(uv\), we delete both \(u\) and \(v\) and create a new vertex \(w\) with neighbourhood \(N(w) = N_G(u) \cup N_G(v)\). The graph obtained after contracting the edge \(uv\) in $G$ is written as \(G/uv\). Much of structural graph theory involves graph minors in some way. Many of the theorems that we will discuss throughout this report discuss graph minors. 
+
+The statement ``\(H\) is a minor of \(G\)'' is written as \(H \leq G\). A graph \(G\) is \textit{\(H\)-minor-free} if $H$ is not a minor of $G$. A family of graphs \(\mathcal{F}\) is \textit{minor-closed} if and only if for all $G$ in \(\mathcal{F}\) and \(H \leq G\), then $H$ in \(\mathcal{F}\).
+
+An example of a minor-closed class is the class of planar graphs.
+
+Let $G$ and $H$ be graphs. A \textit{model} of \(H\) in \(G\) is a function $\rho$ which assigns to \(H\) vertex-disjoint connected subgraphs of \(G\), and if $uv$ is an edge in \(E(H)\), then some edge in \(G\) joins the two subgraphs \(\rho(u)\) and \(\rho(v)\)
+
+\begin{lemma}
+	A graph \(H\) is a model of a graph \(G\) if and only if $H$ is a minor of $G$.
+\end{lemma}
+
+\begin{proof}
+	Suppose \(H\) is a model of \(G\). Then over all \(x\) in \(V(H)\), contract \(\rho(x)\) in \(G\) to a single vertex. This is a well-defined operation as the image $\rho(x)$ is connected and disjoint from all $\rho(y)$ where $y$ is a distinct vertex in $H$. Then delete edges to form \(H\).
+
+	Suppose $H$ is a minor of $G$. Use induction to show that \(H\) has a model in \(G\). Suppose \(H\) is obtained from \(G\) by contraction operations only. We can assume this by taking a subgraph of \(G\) if necessary. Let \(uv\) be the first contracted edge and let \(G' := G / uv\). Let \(w\) be the vertex obtained after contracting \(uv\). Then by induction, a model \(\rho\) of \(H\) in \(G'\) exists. Then find $x \in V(H)$ such that $w \in V(\rho(x))$. If no such $x$ exists, then $\rho$ is a model of $H$ in $G$. Otherwise, delete \(w\) from \(V(\rho(x)) \) and add $u, v$ to $V(\rho(x))$, the edge $uv$, and the edges from $u$ and $v$ to the neighbours in $w$ in $\rho(x)$. Then this is a model of \(H\) in \(G\). 
+\end{proof}
+
+An important minor-closed graph family is the set of \(K_t\)-minor-free graphs for a fixed $t \geq 0$. For a graph \(G\), \(\had(G)\) is the largest \(t\) such that \(K_t\) is a minor of \(G\). The set of $K_t$-minor-free graphs is the set of graphs $G$ where $\had(G) \leq t - 1$. The function $\had(G)$ is named after Hugo Hadwiger due to his conjecture below.
+\begin{conjecture}[Hadwiger's conjecture]\label{conj:Hadwiger's Conjecture}
+	For every graph \(G\), \(\chi(G) \leq \had(G)\).
+\end{conjecture}
+Much work has been done on solving Hadwiger's conjecture, with a survey by on the latest progress. However, \cref{conj:Hadwiger's Conjecture} remains unsolved.
+
+ Any result on $K_t$-minor-free graphs implies results about minor-closed families. This is due to \cref{lem:minor-closed-Kt}. 
+
+\begin{lemma}\label{lem:minor-closed-Kt}
+    Every proper minor-closed family is $K_t$-minor-free for some $t$. 
+\end{lemma}
+\begin{proof}
+    As $\mathcal{F}$ is proper, there exists a graph $H$ which is not in $\mathcal{F}$. But this means that $H$ is not a minor of any graph in $\mathcal{F}$. Then $K_t$ is not a minor of $\mathcal{F}$, where $t = |V(H)|$. Then $\mathcal{F}$ is $K_t$-minor-free. 
+\end{proof}
+Note that $H$ may not be the smallest forbidden graph in $\mathcal{F}$, but the existence of such an $H$ is sufficient. From \cref{lem:minor-closed-Kt}, every proper minor-closed graph family is $K_t$-minor-free.
+
 
 \section{Treewidth}
 
